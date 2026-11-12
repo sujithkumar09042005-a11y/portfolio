@@ -1,4 +1,3 @@
-// Copyright (c) 2026 ReLU Technologies Private Limited. All rights reserved.
 // All site content lives here so components stay presentational.
 
 export const NAME = "Sujith Kumar V";

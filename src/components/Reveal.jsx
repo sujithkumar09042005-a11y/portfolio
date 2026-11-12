@@ -1,4 +1,3 @@
-// Copyright (c) 2026 ReLU Technologies Private Limited. All rights reserved.
 import { useInView } from "../hooks.js";
 
 /** Section heading whose text rises out of a mask when scrolled into view. */

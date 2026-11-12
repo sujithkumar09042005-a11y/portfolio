@@ -1,4 +1,3 @@
-// Copyright (c) 2026 ReLU Technologies Private Limited. All rights reserved.
 import { lazy, Suspense } from "react";
 import About from "./components/About.jsx";
 import Contact from "./components/Contact.jsx";

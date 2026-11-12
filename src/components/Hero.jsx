@@ -1,4 +1,3 @@
-// Copyright (c) 2026 ReLU Technologies Private Limited. All rights reserved.
 import { useEffect, useRef, useState } from "react";
 import { HERO_LINES, PHRASES } from "../data.js";
 import { useCanHover, useMagnetic, useReducedMotion } from "../hooks.js";

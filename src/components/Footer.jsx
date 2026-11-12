@@ -1,4 +1,3 @@
-// Copyright (c) 2026 ReLU Technologies Private Limited. All rights reserved.
 import { useEffect, useRef, useState } from "react";
 import { FOOTER_SITEMAP, NAME, SOCIALS } from "../data.js";
 import { useInView, useReducedMotion, useScroll } from "../hooks.js";

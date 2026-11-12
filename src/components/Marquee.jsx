@@ -1,4 +1,3 @@
-// Copyright (c) 2026 ReLU Technologies Private Limited. All rights reserved.
 import { useEffect, useRef } from "react";
 import { MARQUEE } from "../data.js";
 import { useOnScreen, useReducedMotion } from "../hooks.js";

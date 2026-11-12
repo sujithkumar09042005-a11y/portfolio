@@ -1,4 +1,3 @@
-// Copyright (c) 2026 ReLU Technologies Private Limited. All rights reserved.
 import { useRef, useState } from "react";
 import { EXPERIENCE, RESUME } from "../data.js";
 import { useMagnetic, useScroll } from "../hooks.js";

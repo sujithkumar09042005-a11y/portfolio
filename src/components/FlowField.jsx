@@ -1,4 +1,3 @@
-// Copyright (c) 2026 ReLU Technologies Private Limited. All rights reserved.
 import { useEffect, useRef } from "react";
 
 const R = 190;      // radius in which the pointer bends particles

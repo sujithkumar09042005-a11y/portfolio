@@ -1,4 +1,3 @@
-// Copyright (c) 2026 ReLU Technologies Private Limited. All rights reserved.
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 function useMedia(query, serverValue) {

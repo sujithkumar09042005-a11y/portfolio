@@ -1,4 +1,3 @@
-// Copyright (c) 2026 ReLU Technologies Private Limited. All rights reserved.
 import { useActionState, useEffect, useRef, useState } from "react";
 import { EMAIL, SOCIALS } from "../data.js";
 import { useMagnetic, useReducedMotion } from "../hooks.js";

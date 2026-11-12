@@ -1,4 +1,3 @@
-// Copyright (c) 2026 ReLU Technologies Private Limited. All rights reserved.
 import { useEffect, useRef, useState } from "react";
 import { PROJECTS } from "../data.js";
 import { useCanHover, useReducedMotion } from "../hooks.js";

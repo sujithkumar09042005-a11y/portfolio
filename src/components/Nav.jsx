@@ -1,4 +1,3 @@
-// Copyright (c) 2026 ReLU Technologies Private Limited. All rights reserved.
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { NAME, NAV } from "../data.js";
 import { useReducedMotion, useScroll, useTheme } from "../hooks.js";
