@@ -1,7 +1,6 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 import { EMAIL, SOCIALS } from "../data.js";
 import { useMagnetic, useReducedMotion } from "../hooks.js";
-import { Title } from "./Reveal.jsx";
 
 const Arrow = () => (
   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" /></svg>
@@ -35,7 +34,7 @@ function CopyEmail() {
     } catch { setFallback(true); }
   }
   return (
-    <button className={"copy" + (done ? " done" : "")} type="button" onClick={copy} aria-label="Copy email address">
+    <button className={"copy-btn" + (done ? " done" : "")} type="button" onClick={copy} aria-label="Copy email address">
       <span>{done ? "Copied" : fallback ? "Press Ctrl+C" : "Copy"}</span>
     </button>
   );
@@ -118,11 +117,12 @@ function ContactForm() {
 
 export default function Contact() {
   return (
-    <section className="section contact" id="contact">
-      <Title>Let's work together</Title>
+    <section className="chap contact" id="contact" data-stop aria-labelledby="h-contact">
+      <div className="copy">
+      <h2 id="h-contact" className="sm">Let's work together</h2>
       <div className="contact-grid">
         <div className="contact-main">
-          <p className="contact-lead">Have a project in mind, or just want to say hello? Write to me and I will reply within two working days.</p>
+          <p className="contact-lead">Have a project in mind, or just want to say hello? Write to me below or by email.</p>
           <div className="mail-row">
             <a className="big-mail" href={`mailto:${EMAIL}`}>{EMAIL}</a>
             <CopyEmail />
@@ -132,13 +132,9 @@ export default function Contact() {
               <li key={s.label}><a href={s.href} target="_blank" rel="noopener"><span>{s.label}</span><Arrow /></a></li>
             ))}
           </ul>
-          <svg className="badge" viewBox="0 0 200 200" aria-hidden="true">
-            <defs><path id="circ" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0" /></defs>
-            <text><textPath href="#circ">open for projects * open for projects * open for projects * </textPath></text>
-            <circle cx="100" cy="100" r="6" />
-          </svg>
         </div>
         <ContactForm />
+      </div>
       </div>
     </section>
   );

@@ -9,7 +9,8 @@ export const RESUME = "https://drive.google.com/file/d/16Ga2nFcqlgoyxr6YUDyS0sDL
 
 export const NAV = [
   { id: "about", label: "About" },
-  { id: "work", label: "Work" },
+  { id: "stack", label: "Stack" },
+  { id: "projects", label: "Projects" },
   { id: "experience", label: "Experience" },
   { id: "contact", label: "Contact" },
 ];
@@ -67,24 +68,39 @@ export const PROJECTS = [
 
 export const EXPERIENCE = [
   {
-    when: "6 months",
-    title: "Java Full-Stack Intern, TAP Academy",
-    desc: "Trained across frontend, backend and database work in Bangalore, built backend applications with Spring, Hibernate, J2EE, JSP and JDBC on MySQL, and delivered a real-time project.",
-    tags: ["Spring Boot", "Hibernate", "MySQL"],
-  },
-  {
     when: "Expected 2026",
-    title: "B.E. Electronics and Communication, Sri Ramakrishna Institute of Technology",
+    title: "B.E. Electronics and Communication",
+    org: "Sri Ramakrishna Institute of Technology",
     desc: "Studying with a CGPA of 8.4, alongside solving data structures and algorithms problems on LeetCode and taking part in Smart India Hackathon 2024.",
     tags: ["DSA", "OOPS", "DBMS"],
   },
   {
-    when: "2026",
-    title: "Certifications",
-    desc: "The Complete Full-Stack Web Development Bootcamp on Udemy (62 hours), plus Claude 101 and Introduction to Claude Cowork from Anthropic's Claude Academy.",
-    tags: ["Full-stack", "Claude"],
+    when: "6 months",
+    title: "Java Full-Stack Intern",
+    org: "TAP Academy, Bangalore",
+    desc: "Trained across frontend, backend and database work, built backend applications with Spring, Hibernate, J2EE, JSP and JDBC on MySQL, and delivered a real-time project.",
+    tags: ["Spring Boot", "Hibernate", "MySQL"],
+  },
+  {
+    when: "Current",
+    title: "Software Trainee",
+    org: "ReluSys",
+    desc: "Currently working here as a Software Trainee.",
+    tags: [],
   },
 ];
+
+export const CERTS =
+  "The Complete Full-Stack Web Development Bootcamp on Udemy (62 hours), plus Claude 101 and Introduction to Claude Cowork from Anthropic's Claude Academy.";
+
+export const STACK = [
+  { label: "Backend", items: ["Java", "Spring Boot", "Hibernate", "J2EE", "JDBC"] },
+  { label: "Frontend", items: ["JavaScript", "TypeScript", "React", "Tailwind CSS", "Vite"] },
+  { label: "Data and tools", items: ["MySQL", "Git"] },
+];
+
+export const HERO_LINE =
+  "I build Java and Spring Boot backends with React frontends that are fast, keyboard-accessible and easy to use.";
 
 export const SOCIALS = [
   { label: "GitHub", href: GITHUB },
