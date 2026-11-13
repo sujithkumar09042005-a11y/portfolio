@@ -18,6 +18,21 @@ const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t
 const seen = (z) => smooth(-2400, -600, z) * (1 - smooth(0, 350, z));
 const cardZ = (i) => -(FIRST + i) * GAP;
 
+// Colour worlds. The scene's colours blend smoothly from one chapter's hue to the next as the camera travels between them.
+const HUES = DIVE_CHAPTERS.map((c) => c.hue);
+const LUMS = DIVE_CHAPTERS.map((c) => c.lum);
+const hueAt = (s) => {                       // s is travel in px; chapter i is centred at its giant word
+  const f = clamp((s - (cardZ(0) * -1)) / GAP, 0, N - 1);
+  const i = Math.min(N - 2, Math.floor(f)), t = smooth(0, 1, f - i);
+  let a = HUES[i], b = HUES[i + 1]; if (b - a > 180) a += 360; if (a - b > 180) b += 360;
+  return { h: (a + (b - a) * t + 360) % 360, l1: LUMS[i][0] + (LUMS[i + 1][0] - LUMS[i][0]) * t, l2: LUMS[i][1] + (LUMS[i + 1][1] - LUMS[i][1]) * t };
+};
+const STREAKS = 26;
+const streakSeed = Array.from({ length: STREAKS }, (_, k) => {
+  const a = (k * 137.508) % 360, r = 0.18 + ((k * 0.61803) % 1) * 0.78;     // golden-angle scatter around the vanishing point
+  return { a, r, len: 0.5 + ((k * 0.381966) % 1) * 0.9, warm: k % 5 === 0 };
+});
+
 // The readable copy flies with the scene: it arrives from the vanishing point at the speed of the world, slows to a
 // near-stop while you read it, then flies past you. Index 0 is the intro, 1..N are the chapters.
 // Tuned by simulation: no two texts visible together, no dead stretches, and the text stays with its giant word.
@@ -63,7 +78,9 @@ export default function Dive() {
   const words = useRef([]);
   const items = useRef([]);
   const name = useRef(null);
-  const st = useRef({ s: 0, px: 0, py: 0, tx: 0, ty: 0 });
+  const stage = useRef(null);
+  const streaks = useRef([]);
+  const st = useRef({ s: 0, px: 0, py: 0, tx: 0, ty: 0, v: 0, lastS: 0, phase: 0, lastT: 0, loop: 0 });
   const [active, setActive] = useState(-1);
 
   const write = () => {
@@ -71,13 +88,53 @@ export default function Dive() {
     world.current.style.transform = `translate3d(${px.toFixed(1)}px, ${py.toFixed(1)}px, ${s.toFixed(1)}px)`;
   };
 
+  // The streaks are driven by a smoothed travel speed and their own phase, so they keep flying and fade out after scrolling stops.
+  const paintSpeed = () => {
+    const c = st.current;
+    const speed = clamp(Math.abs(c.v) / 70, 0, 1), dir = c.v >= 0 ? 1 : -1;
+    if (stage.current) stage.current.style.setProperty("--speed", speed.toFixed(3));
+    streaks.current.forEach((el, k) => {
+      if (!el) return;
+      const run = (((c.phase * 0.5 + k * 400) % 1600) + 1600) % 1600;
+      const t = dir > 0 ? run / 1600 : 1 - run / 1600;
+      el.style.setProperty("--t", t.toFixed(3));
+      el.style.opacity = (speed * (0.25 + 0.75 * Math.sin(Math.PI * t))).toFixed(3);
+    });
+  };
+  const speedLoop = () => {
+    const c = st.current;
+    c.loop = 0;
+    if (performance.now() - c.lastT > 70) c.v *= 0.9;          // no scroll for a moment: slow down
+    c.phase += c.v;
+    paintSpeed();
+    if (Math.abs(c.v) > 0.4) c.loop = requestAnimationFrame(speedLoop);
+    else { c.v = 0; paintSpeed(); }
+  };
+  useEffect(() => () => cancelAnimationFrame(st.current.loop), []);
+
   useScroll(() => {
     if (reduce || !sec.current) return;
     const travel = sec.current.offsetHeight - innerHeight;
     const p = travel > 0 ? clamp(-sec.current.getBoundingClientRect().top / travel, 0, 1) : 0;
     const s = p * D;
-    st.current.s = s;
+    const c = st.current;
+    c.v += ((s - c.lastS) - c.v) * 0.35; c.lastS = s;                 // smoothed travel speed in px per frame
+    c.s = s;
     write();
+    // 2) colour world: the chapter's own hue, blended with the next one while travelling between them
+    const w = hueAt(s);
+    const lt = document.documentElement.dataset.theme === "light";
+    const sat = lt ? 80 : 92, sat2 = lt ? 82 : 95;
+    stage.current.style.setProperty("--c1", `hsl(${w.h.toFixed(1)} ${sat}% ${lt ? (w.l1 * 100).toFixed(1) : 70}%)`);
+    stage.current.style.setProperty("--c2", `hsl(${((w.h + 45) % 360).toFixed(1)} ${sat2}% ${lt ? (w.l2 * 100).toFixed(1) : 62}%)`);
+    // 1) speed streaks: they stretch and brighten with how fast you scroll, then fade away when you stop (see paintSpeed)
+    c.lastT = performance.now();
+    if (!c.loop) c.loop = requestAnimationFrame(speedLoop);
+    paintSpeed();
+    // 4) a light source: the vanishing-point glow swells as a chapter arrives and settles while you read it
+    let arrive = 0;
+    for (let i = 0; i < N; i++) { const o = seen(cardZ(i) + s); if (o > arrive) arrive = o; }
+    stage.current.style.setProperty("--lit", (0.55 + 0.45 * arrive).toFixed(3));
     bar.current.style.transform = `scaleX(${p.toFixed(4)})`;
     name.current.style.opacity = String(1 - smooth(0, 350, s));
     spin.current.style.transform = `rotateZ(${(s * 0.004).toFixed(2)}deg)`;
@@ -140,7 +197,14 @@ export default function Dive() {
       {!reduce && DIVE_CHAPTERS.map((c, i) => c.anchor && (
         <span key={c.anchor} id={c.anchor} className="dive-anchor" style={{ "--f": anchorFraction(i) }} />
       ))}
-      <div className="dive-stage">
+      <div className="dive-stage" ref={stage}>
+        <div className="dive-light" aria-hidden="true" />
+        <div className="dive-streaks" aria-hidden="true">
+          {streakSeed.map((sd, k) => (
+            <i key={k} className={sd.warm ? "is-warm" : undefined} ref={(el) => { streaks.current[k] = el; }}
+              style={{ "--a": `${sd.a}deg`, "--r": sd.r, "--len": sd.len }} />
+          ))}
+        </div>
         <div className="dive-view" aria-hidden="true">
           <div className="dive-world" ref={world}>
             <div className="dive-spin" ref={spin}>
@@ -151,7 +215,7 @@ export default function Dive() {
               ))}
             </div>
             {DIVE_CHAPTERS.map((c, i) => (
-              <span key={c.label} className="scene-big" data-on={active === i} ref={(el) => { bigs.current[i] = el; }} style={{ "--z": `${cardZ(i)}px` }}>{c.big}</span>
+              <span key={c.label} className="scene-big" data-t={c.big} data-on={active === i} ref={(el) => { bigs.current[i] = el; }} style={{ "--z": `${cardZ(i)}px` }}>{c.big}</span>
             ))}
             {WORDS.map((w, k) => (
               <span key={k} className={"scene-w" + (w.acc ? " is-accent" : "")} ref={(el) => { words.current[k] = el; }}
@@ -163,6 +227,7 @@ export default function Dive() {
           {HERO_LINES.map((l, i) => <span key={l}>{l}{i < HERO_LINES.length - 1 ? " " : ""}</span>)}
         </h1>
 
+        <div className="dive-vignette" aria-hidden="true" />
         <div className="dive-ui">
           <ol className="dive-copy">
             <li data-on={active === -1} ref={(el) => { items.current[0] = el; }}>

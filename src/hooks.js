@@ -17,13 +17,15 @@ export function useScroll(cb) {
   const latest = useRef(cb);
   useEffect(() => { latest.current = cb; });
   useEffect(() => {
-    let queued = false;
-    const run = () => { queued = false; latest.current(); };
-    const on = () => { if (!queued) { queued = true; requestAnimationFrame(run); } };
+    let queued = 0, dead = false;
+    const run = () => { queued = 0; if (!dead) latest.current(); };
+    const on = () => { if (!queued) queued = requestAnimationFrame(run); };
     window.addEventListener("scroll", on, { passive: true });
     window.addEventListener("resize", on);
     latest.current();
     return () => {
+      dead = true;
+      if (queued) cancelAnimationFrame(queued);   // a frame queued before unmount must not touch elements that are gone
       window.removeEventListener("scroll", on);
       window.removeEventListener("resize", on);
     };
