@@ -9,7 +9,7 @@ export const RESUME = "https://drive.google.com/file/d/16Ga2nFcqlgoyxr6YUDyS0sDL
 
 export const NAV = [
   { id: "about", label: "About" },
-  { id: "work", label: "Work" },
+  { id: "work", label: "Projects" },
   { id: "experience", label: "Experience" },
   { id: "contact", label: "Contact" },
 ];
@@ -21,55 +21,58 @@ export const SOCIALS = [
 
 export const FOOTER_SITEMAP = NAV;
 
-// The whole story lives in the dive: the name, About, three projects, then experience. Contact is a separate section.
-// Each chapter is one scene. `big` is the giant word you fly toward; `words` are floating words at other depths, as
-// [text, x in vw, y in vh, depth offset in px, accent]. The readable copy is `title`, `text` and `stack`.
+// The whole story lives in the dive, in this order: the name, About (a heading scene, then its content), Projects (a heading
+// scene, then all three projects together), Experience (a heading scene, then college, TAP Academy and ReluSys in order).
+// Contact is a separate section after the dive. Each scene has a `kind`:
+//   head   a giant word you fly toward and one line under it
+//   body   a title, a paragraph and a few extra lines in the middle of the scene
+//   dense  several entries side by side (`items`)
+// `words` are floating words at other depths, as [text, x in vw, y in vh, depth offset in px, accent].
 export const DIVE_INTRO = "Full-stack developer. Scroll to move forward.";
-export const DIVE_CHAPTERS = [
+export const DIVE_SECTIONS = ["About", "Projects", "Experience"];
+export const DIVE_SCENES = [
   {
-    label: "About", anchor: "about", big: "Full-stack",
+    kind: "head", section: 0, label: "About", anchor: "about", big: "About",
+    title: "Full-Stack Developer.",
+    words: [["Java", -33, -30, 200], ["Spring Boot", 29, -33, -300, true], ["React", -31, 26, -500], ["TypeScript", 33, 22, 100], ["MySQL", 3, 36, -700]],
+  },
+  {
+    kind: "body", section: 0, label: "About",
     title: "The developer behind it.",
     text: "I am finishing a B.E. in Electronics and Communication Engineering in India, with a CGPA of 8.4, and I build full-stack apps in Java, Spring Boot and React. I care about interfaces that are fast, keyboard-accessible and easy to use, and I have started combining that with AI tools.",
-    words: [["Java", -33, -26, 200], ["Spring Boot", 29, -31, -300, true], ["React", -30, 8, -500], ["TypeScript", 33, 4, 100], ["MySQL", 3, -38, -700], ["India", -6, 10, 350]],
+    extra: [
+      "Tools: Java, JavaScript, TypeScript, Spring Boot, React, MySQL, Git.",
+      "Certified: the Complete Full-Stack Web Development Bootcamp on Udemy (62 hours), plus Claude 101 and Introduction to Claude Cowork from Anthropic's Claude Academy.",
+    ],
+    words: [["Hibernate", -34, -31, 240], ["REST APIs", 31, -30, -260, true], ["Tailwind CSS", -32, 31, 120], ["Git", 33, 28, -450], ["Spring", 4, -37, -650]],
   },
   {
-    label: "FeastFlow", anchor: "work", big: "FeastFlow", href: GITHUB, link: "View FeastFlow on GitHub",
-    title: "A food delivery app, front to back.",
-    text: "A full-stack app with Spring Boot REST APIs, a MySQL database for orders and delivery records, a live rider-tracking simulator and dark mode.",
-    stack: "Built with React, Spring Boot and MySQL.",
-    words: [["React", -32, -27, 250], ["Spring Boot", 30, -30, -250, true], ["MySQL", 31, 6, 120], ["Rider tracking", -24, 9, -450], ["Dark mode", 6, -37, -650]],
+    kind: "head", section: 1, label: "Projects", anchor: "work", big: "Projects",
+    title: "Three things I built.",
+    words: [["React", -33, -30, 250], ["Gemini", 30, -33, -250, true], ["Recharts", -31, 26, 120], ["Rider tracking", 28, 23, -450], ["Offline", 5, 36, -650]],
   },
   {
-    label: "Voyager", big: "Voyager", href: GITHUB, link: "View Voyager on GitHub",
-    title: "An AI travel planner.",
-    text: "An AI travel discovery platform with live GPS distances, a Gemini-powered trip planner, day-by-day itineraries and keyboard-accessible navigation.",
-    stack: "Built with React, TypeScript, Tailwind CSS and Google Gemini.",
-    words: [["Gemini", 31, -29, 200, true], ["React", -33, -25, -250], ["TypeScript", 30, 7, -480], ["Itineraries", -26, 9, 150], ["Live GPS", 4, -37, -700]],
+    kind: "dense", section: 1, label: "Projects",
+    items: [
+      { title: "FeastFlow", text: "A full-stack food delivery app with Spring Boot REST APIs, a MySQL database for orders and delivery records, a live rider-tracking simulator and dark mode.", stack: "React, Spring Boot and MySQL.", href: GITHUB, link: "View FeastFlow on GitHub" },
+      { title: "Voyager", text: "An AI travel discovery platform with live GPS distances, a Gemini-powered trip planner, day-by-day itineraries and keyboard-accessible navigation.", stack: "React, TypeScript, Tailwind CSS and Google Gemini.", href: GITHUB, link: "View Voyager on GitHub" },
+      { title: "SplitWise", text: "An offline-first bill-splitting app that simplifies group debts to the fewest settlements, with itemized receipts, charts and PDF export.", stack: "React, Vite, Tailwind CSS and Recharts.", href: GITHUB, link: "View SplitWise on GitHub" },
+    ],
+    words: [["Spring Boot", -34, -36, 220, true], ["MySQL", 31, -37, -260], ["TypeScript", -30, 36, 120], ["Vite", 32, 35, -450]],
   },
   {
-    label: "SplitWise", big: "SplitWise", href: GITHUB, link: "View SplitWise on GitHub",
-    title: "Bills split, debts settled.",
-    text: "An offline-first bill-splitting app that simplifies group debts to the fewest settlements, with itemized receipts, charts and PDF export.",
-    stack: "Built with React, Vite, Tailwind CSS and Recharts.",
-    words: [["Offline", -31, -28, 220], ["Recharts", 30, -30, -280, true], ["PDF export", 28, 8, 130], ["Fewest payments", -22, 10, -470], ["Vite", 5, -37, -680]],
+    kind: "head", section: 2, label: "Experience", anchor: "experience", big: "Experience",
+    title: "Where I studied and worked.",
+    words: [["Hibernate", -33, -30, 240], ["Spring Boot", 30, -33, -260, true], ["JDBC", -30, 26, 110], ["MySQL", 30, 23, -450], ["J2EE", 4, 36, -650]],
   },
   {
-    label: "Internship", anchor: "experience", big: "Intern",
-    title: "Six months as a full-stack intern.",
-    text: "At TAP Academy in Bangalore I trained across frontend, backend and database work, built backend applications with Spring, Hibernate, J2EE, JSP and JDBC on MySQL, and delivered a real-time project.",
-    words: [["Hibernate", -32, -27, 240], ["Spring Boot", 31, -30, -260, true], ["JDBC", 30, 7, 100], ["J2EE", -27, 9, -450], ["MySQL", 5, -37, -680]],
-  },
-  {
-    label: "Education", big: "B.E.",
-    title: "Studying Electronics and Communication.",
-    text: "At Sri Ramakrishna Institute of Technology, expected 2026, with a CGPA of 8.4. Alongside it I solve data structures and algorithms problems on LeetCode and took part in Smart India Hackathon 2024.",
-    words: [["CGPA 8.4", 31, -29, 220, true], ["DSA", -33, -26, -250], ["OOPS", 30, 7, -470], ["DBMS", -26, 9, 140], ["Hackathon 2024", 4, -37, -700]],
-  },
-  {
-    label: "Certifications", big: "Certified", cta: true,
-    title: "Certified in full-stack and Claude.",
-    text: "The Complete Full-Stack Web Development Bootcamp on Udemy, 62 hours, plus Claude 101 and Introduction to Claude Cowork from Anthropic's Claude Academy.",
-    words: [["Udemy, 62 hours", -26, -28, 230], ["Claude 101", 30, -30, -260, true], ["Claude Cowork", 27, 8, -480], ["Full-stack", -30, 9, 120]],
+    kind: "dense", section: 2, label: "Experience", cta: true,
+    items: [
+      { n: 1, when: "Expected 2026", title: "College", org: "B.E. in Electronics and Communication, Sri Ramakrishna Institute of Technology", text: "A CGPA of 8.4, alongside data structures and algorithms practice on LeetCode and Smart India Hackathon 2024." },
+      { n: 2, when: "6 months", title: "TAP Academy", org: "Java Full-Stack Intern, Bangalore", text: "Trained across frontend, backend and database work, built backend applications with Spring, Hibernate, J2EE, JSP and JDBC on MySQL, and delivered a real-time project." },
+      { n: 3, when: "Current", title: "ReluSys", org: "Software Trainee", text: "" },
+    ],
+    words: [["DSA", -34, -36, 220, true], ["Smart India Hackathon", 26, -37, -280], ["LeetCode", -31, 36, 120], ["Java", 33, 35, -450]],
   },
 ];
 

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { DIVE_CHAPTERS, DIVE_INTRO, DIVE_PALETTE, DIVE_PALETTES, HERO_LINES } from "../data.js";
+import { DIVE_INTRO, DIVE_PALETTE, DIVE_PALETTES, DIVE_SCENES, DIVE_SECTIONS, HERO_LINES } from "../data.js";
 import { chapterColors, worldColors } from "../palette.js";
 import LiveName from "./LiveName.jsx";
 import { LiveText } from "./Live.jsx";
@@ -7,26 +7,33 @@ import { startPointer } from "../pointer.js";
 import { useReducedMotion, useScroll } from "../hooks.js";
 
 // World units are CSS pixels along z. The camera moves forward by `s`; an object at world z sits at z + s on screen.
-const N = DIVE_CHAPTERS.length;
-const GAP = 1200;                  // distance between chapter scenes
-const FIRST = 1.6;                 // the first scene starts 1.6 gaps away, so the opening is just the name and the tunnel
-const D = (FIRST + N - 1) * GAP;   // total travel: the last scene ends at the camera plane
+const SCENES = DIVE_SCENES;
+const N = SCENES.length;
+const FIRST = 1700;                // the first scene starts 1700px away, so the opening is just the name and the tunnel
+// How far apart the scenes sit: a heading scene is a short beat, a content scene holds still long enough to read.
+// Tuned by simulation over every scroll position: no two scenes' text at once, no dead stretch, and each scene readable for
+// about 640 to 730px of scrolling.
+const SPAN = { head: 1100, body: 1100, dense: 1100 };
+const POS = [];                    // z distance at which each scene is in front of the camera
+SCENES.forEach((sc, i) => POS.push((i === 0 ? FIRST : POS[i - 1]) + (i === 0 ? 0 : SPAN[sc.kind])));
+const D = POS[N - 1];              // total travel: the last scene ends at the camera plane
 const RING_GAP = 250;
 const RINGS = Math.ceil((D + 2400) / RING_GAP);
 const SECTION_VH = Math.round(100 + D * 0.0833);   // about 0.75 screen pixels of scrolling per pixel of travel
 const SECTION_VH_M = Math.round(100 + D * 0.0688);
+const CONTENT = SCENES.map((sc) => sc.kind !== "head");   // scenes whose copy sits in the middle of the scene
 
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
 // Fades in from far away, full while near, fades out as it passes the camera.
 const seen = (z) => smooth(-2400, -600, z) * (1 - smooth(0, 350, z));
-const cardZ = (i) => -(FIRST + i) * GAP;
+const cardZ = (i) => -POS[i];
 
 // Colour worlds. The hue drifts along the palette's arc as the camera travels, so every moment has its own colour and
 // neighbouring chapters are close relatives at the same lightness (see palette.js and DIVE_PALETTES in data.js).
 const PAL = DIVE_PALETTES[DIVE_PALETTE];
 const hueAt = (s) => {
-  const f = clamp((s - (cardZ(0) * -1)) / GAP, 0, N - 1) / (N - 1);   // 0 at the first chapter, 1 at the last
+  const f = clamp((s - POS[0]) / (POS[N - 1] - POS[0]), 0, 1);   // 0 at the first scene, 1 at the last
   return PAL.arc[0] + (PAL.arc[1] - PAL.arc[0]) * f;
 };
 const STREAKS = 26;
@@ -38,10 +45,10 @@ const streakSeed = Array.from({ length: STREAKS }, (_, k) => {
 // The readable copy flies with the scene: it arrives from the vanishing point at the speed of the world, slows to a
 // near-stop while you read it, then flies past you. Index 0 is the intro, 1..N are the chapters.
 // Tuned by simulation: no two texts visible together, no dead stretches, and the text stays with its giant word.
-const HOLD = 380, INTRO_HOLD = 700, OFFSET = 400;
+const HOLDS = { head: 320, body: 380, dense: 380 }, INTRO_HOLD = 700, OFFSET = 300;
 const REST = 0.7;                       // the middle 70% of the hold is perfectly flat, so the text is pixel-sharp while you read it
-const centre = (c) => (c === 0 ? 0 : (FIRST + c - 1) * GAP - OFFSET);
-const hold = (c) => (c === 0 ? INTRO_HOLD : HOLD);
+const centre = (c) => (c === 0 ? 0 : POS[c - 1] - OFFSET);
+const hold = (c) => (c === 0 ? INTRO_HOLD : HOLDS[SCENES[c - 1].kind]);
 const EDGE_Z = 53;                      // how far the text has drifted by the end of its hold (as before)
 const copyZ = (s, c) => {
   const h = hold(c), u = s - centre(c), a = Math.abs(u), d = h * REST, sign = u < 0 ? -1 : 1;
@@ -49,8 +56,8 @@ const copyZ = (s, c) => {
   if (a <= h) return sign * ((a - d) / (h - d)) * EDGE_Z;
   return sign * (a - h + EDGE_Z);
 };
-const enter = (z) => clamp((z + 420) / 340, 0, 1);              // 0 far away, 1 once it has arrived
-const leave = (z) => 1 - smooth(40, 280, z);                    // 1 until it starts to pass, 0 once it is by
+const enter = (z) => clamp((z + 340) / 260, 0, 1);              // 0 far away, 1 once it has arrived
+const leave = (z) => 1 - smooth(40, 320, z);                    // 1 until it starts to pass, 0 once it is by
 const copyOpacity = (z) => leave(z) * clamp(enter(z) * 2.5, 0, 1);
 
 // Text reacts to the pointer only while it is actually visible: the scene's script writes its opacity, and this reads it.
@@ -63,14 +70,65 @@ function activeAt(s) {
 }
 // Where along the page's scroll a chapter's copy has arrived, as a fraction of the pinned travel (used for #anchors).
 const anchorFraction = (i) => centre(i + 1) / D;
+// The section a scene belongs to, for the chapter counter (heading and content scenes count as one chapter).
+const chapterOf = (i) => (i < 0 ? 0 : SCENES[i].section + 1);
 
 // The floating words around each chapter's big word, flattened with their world depth.
-const WORDS = DIVE_CHAPTERS.flatMap((c, i) => (c.words || []).map(([t, x, y, off, acc]) => ({ i, t, x, y, z: cardZ(i) + off, acc: !!acc })));
+const WORDS = SCENES.flatMap((c, i) => (c.words || []).map(([t, x, y, off, acc]) => ({ i, t, x, y, z: cardZ(i) + off, acc: !!acc })));
 
 /** A short title split into words so each can rise in turn as the chapter arrives, and then react to the pointer. Screen readers
  *  still read it as a sentence. */
 function Words({ text, gate }) {
   return <LiveText text={text} kind="title" unit="words" gate={gate} perFrame outer="tw" />;
+}
+
+
+/** A heading scene: a short line under the giant word. The giant word itself flies in the scene; this is its caption. */
+function HeadScene({ c, gate }) {
+  return (
+    <div className="scene-cap">
+      <h2 className="scene-h"><Words text={c.title} gate={gate} /></h2>
+    </div>
+  );
+}
+
+/** A content scene: a title, a paragraph and a few lines, centred in the scene. */
+function BodyScene({ c, gate }) {
+  return (
+    <div className="scene-body">
+      <h2 className="scene-h"><Words text={c.title} gate={gate} /></h2>
+      <div className="dive-body">
+        <p><LiveText text={c.text} kind="body" unit="words" perFrame gate={gate} /></p>
+        {c.extra && c.extra.map((e) => <p key={e} className="dive-stack"><LiveText text={e} kind="body" unit="words" perFrame gate={gate} /></p>)}
+      </div>
+    </div>
+  );
+}
+
+/** A dense scene: several entries laid out side by side across the scene, each with its own small heading. */
+function DenseScene({ c, gate, tab }) {
+  return (
+    <div className={"scene-dense" + (c.items[0].n ? " is-steps" : "")}>
+      <ol className="dense-list">
+        {c.items.map((it, k) => (
+          <li key={it.title} className="dense-item" style={{ "--k": k }}>
+            {it.n && <span className="dense-n" aria-hidden="true">{it.n}</span>}
+            <h3 className="dense-t"><LiveText text={it.title} kind="title" unit="words" perFrame gate={gate} /></h3>
+            {it.when && <p className="dense-when">{it.when}</p>}
+            {it.org && <p className="dense-org">{it.org}</p>}
+            {it.text ? <p className="dense-p"><LiveText text={it.text} kind="body" unit="words" perFrame gate={gate} /></p> : <p className="dense-p dense-now">Currently working here as a software trainee.</p>}
+            {it.stack && <p className="dense-stack">{it.stack}</p>}
+            {it.href && <a className="dive-link" href={it.href} target="_blank" rel="noopener" tabIndex={tab}>{it.link}<span className="visually-hidden"> (opens in a new tab)</span></a>}
+          </li>
+        ))}
+      </ol>
+      {c.cta && (
+        <div className="dive-cta">
+          <a href="#contact" className="btn solid" tabIndex={tab}><span>Get in touch</span></a>
+        </div>
+      )}
+    </div>
+  );
 }
 
 /**
@@ -198,8 +256,10 @@ export default function Dive() {
     return () => { cancelAnimationFrame(raf); io.disconnect(); window.removeEventListener("pointermove", move); };
   }, [reduce]);
 
-  const label = active < 0 ? "Start" : DIVE_CHAPTERS[active].label;
+  const chapter = chapterOf(active);
+  const label = active < 0 ? "Start" : DIVE_SECTIONS[SCENES[active].section];
   const tab = (i) => (reduce || active === i ? 0 : -1);
+  const ready = (i) => () => seenOn(items.current[i + 1], 0.25);     // a scene's text reacts only while that scene's copy is showing
 
   return (
     <section
@@ -208,7 +268,7 @@ export default function Dive() {
       style={{ "--dive-h": `${SECTION_VH}vh`, "--dive-h-m": `${SECTION_VH_M}vh` }}
     >
       {/* in-page anchors for the nav, placed along the pinned scroll where each chapter's copy has arrived */}
-      {!reduce && DIVE_CHAPTERS.map((c, i) => c.anchor && (
+      {!reduce && SCENES.map((c, i) => c.anchor && (
         <span key={c.anchor} id={c.anchor} className="dive-anchor" style={{ "--f": anchorFraction(i) }} />
       ))}
       <div className="dive-stage" ref={stage}>
@@ -228,8 +288,8 @@ export default function Dive() {
                   style={{ "--z": `${-k * RING_GAP}px`, "--r": `${k * 5}deg` }} />
               ))}
             </div>
-            {DIVE_CHAPTERS.map((c, i) => (
-              <span key={c.label} className="scene-big" data-on={active === i} ref={(el) => { bigs.current[i] = el; }} style={{ "--z": `${cardZ(i)}px` }}>
+            {SCENES.map((c, i) => c.big && (
+              <span key={i} className="scene-big" data-on={active === i} ref={(el) => { bigs.current[i] = el; }} style={{ "--z": `${cardZ(i)}px` }}>
                 <LiveText text={c.big} kind="giant" unit="whole" perFrame gate={() => seenOn(bigs.current[i], 0.04)} />
               </span>
             ))}
@@ -248,31 +308,21 @@ export default function Dive() {
         <div className="dive-vignette" aria-hidden="true" />
         <div className="dive-ui">
           <ol className="dive-copy">
-            <li data-on={active === -1} ref={(el) => { items.current[0] = el; }}>
-              <div className="dive-block">
-                <p className="dive-title"><Words text={DIVE_INTRO} gate={() => seenOn(items.current[0], 0.25)} /></p>
+            <li className="scene scene--head scene--intro" data-on={active === -1} ref={(el) => { items.current[0] = el; }}>
+              <div className="scene-cap">
+                <p className="scene-h scene-intro"><Words text={DIVE_INTRO} gate={() => seenOn(items.current[0], 0.25)} /></p>
               </div>
             </li>
-            {DIVE_CHAPTERS.map((c, i) => (
-              <li key={c.label} data-on={active === i} id={reduce ? c.anchor : undefined} ref={(el) => { items.current[i + 1] = el; }}>
-                <div className="dive-block">
-                  <h2 className="dive-title"><Words text={c.title} gate={() => seenOn(items.current[i + 1], 0.25)} /></h2>
-                  <div className="dive-body">
-                    <p><LiveText text={c.text} kind="body" unit="words" perFrame gate={() => seenOn(items.current[i + 1], 0.25)} /></p>
-                    {c.stack && <p className="dive-stack"><LiveText text={c.stack} kind="body" unit="words" perFrame gate={() => seenOn(items.current[i + 1], 0.25)} /></p>}
-                    {c.href && <a className="dive-link" href={c.href} target="_blank" rel="noopener" tabIndex={tab(i)}>{c.link}<span className="visually-hidden"> (opens in a new tab)</span></a>}
-                    {c.cta && (
-                      <div className="dive-cta">
-                        <a href="#contact" className="btn solid" tabIndex={tab(i)}><span>Get in touch</span></a>
-                      </div>
-                    )}
-                  </div>
-                </div>
+            {SCENES.map((c, i) => (
+              <li key={i} className={"scene scene--" + c.kind} data-on={active === i} data-section={c.section} id={reduce ? c.anchor : undefined} ref={(el) => { items.current[i + 1] = el; }}>
+                {c.kind === "head" && <HeadScene c={c} gate={ready(i)} />}
+                {c.kind === "body" && <BodyScene c={c} gate={ready(i)} />}
+                {c.kind === "dense" && <DenseScene c={c} gate={ready(i)} tab={tab(i)} />}
               </li>
             ))}
           </ol>
           <div className="dive-hud">
-            <p><span className="muted">Chapter</span> <b>{active + 1}</b> of {N} <span className="muted">&middot;</span> {label}</p>
+            <p><span className="muted">Chapter</span> <b>{chapter}</b> of {DIVE_SECTIONS.length} <span className="muted">&middot;</span> {label}</p>
             <span className="dive-track"><span ref={bar} /></span>
             <a href="#contact" className="dive-skip">Skip to contact</a>
           </div>
