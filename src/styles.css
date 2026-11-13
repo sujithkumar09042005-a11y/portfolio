@@ -243,7 +243,7 @@ main, .footer { position: relative; z-index: 1; }
 /* ---------- The dive: a forward-scrolling CSS 3D tunnel. Visible by default; the 3D layer only runs when not .is-static ---------- */
 .dive { position: relative; height: var(--dive-h, 700vh); }
 .dive.is-static { height: auto; }
-.dive-stage { --c1: var(--accent); --c2: var(--amber); --speed: 0; --lit: 0.6; position: sticky; top: 0; height: 100svh; overflow: hidden; }
+.dive-stage { --c1: var(--accent); --c2: var(--accent); --pop: var(--amber); --speed: 0; --lit: 0.6; position: sticky; top: 0; height: 100svh; overflow: hidden; }
 .dive.is-static .dive-stage { position: static; height: auto; overflow: visible; }
 .dive-view { position: absolute; inset: 0; perspective: 1000px; perspective-origin: 50% 46%; }
 .dive-world { position: absolute; inset: 0; transform-style: preserve-3d; will-change: transform; }
@@ -298,7 +298,7 @@ main, .footer { position: relative; z-index: 1; }
 .scene-big::before { transform: translateZ(-90px) scale(1.02); opacity: 0.55; }
 .scene-big::after { transform: translateZ(-190px) scale(1.04); opacity: 0.28; }
 .scene-w { position: absolute; left: 50%; top: 50%; font-size: clamp(1.3rem, 3.4vw, 2.8rem); font-weight: 600; letter-spacing: -0.03em; white-space: nowrap; color: var(--muted); transform: translate(calc(-50% + var(--x) + var(--dx, 0px)), calc(-50% + var(--y) + var(--dy, 0px))) translateZ(var(--z)); opacity: 0; user-select: none; }
-.scene-w.is-accent { color: var(--c2); text-shadow: 0 0 18px color-mix(in srgb, var(--c2) 45%, transparent); }
+.scene-w.is-accent { color: var(--pop); text-shadow: 0 0 18px color-mix(in srgb, var(--pop) 40%, transparent); }
 .dive-stack { color: var(--text) !important; font-size: 0.98rem !important; }
 .dive-link { display: inline-flex; align-items: center; min-height: 44px; margin-bottom: 0.8rem; color: var(--text); font-weight: 500; text-decoration: underline; text-decoration-color: var(--c1); text-underline-offset: 0.25em; transition: color 0.3s var(--ease); }
 .dive-link:hover { color: var(--c1); }
@@ -324,7 +324,7 @@ main, .footer { position: relative; z-index: 1; }
 /* speed streaks: thin lines that fly outward from the vanishing point and stretch with scroll speed */
 .dive-streaks { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
 .dive-streaks i { position: absolute; left: 50%; top: 46%; width: 2px; height: calc(70px + var(--speed) * 340px * var(--len)); background: linear-gradient(to top, transparent, var(--c1)); border-radius: 2px; opacity: 0; transform-origin: 50% 0; transform: rotate(var(--a)) translateY(calc(var(--r) * 6vmin + var(--t, 0) * 62vmax)) scaleY(calc(0.4 + var(--t, 0) * 1.2)); filter: blur(0.4px); }
-.dive-streaks i.is-warm { background: linear-gradient(to top, transparent, var(--c2)); }
+.dive-streaks i.is-warm { background: linear-gradient(to top, transparent, var(--pop)); }
 /* a vignette that pulls the eye toward the centre, with a faint film grain so the dark is never flat */
 .dive-vignette { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: radial-gradient(ellipse 78% 74% at 50% 46%, transparent 52%, color-mix(in srgb, var(--bg) 78%, transparent) 100%); }
 .dive-vignette::after { content: ""; position: absolute; inset: 0; opacity: 0.07; mix-blend-mode: overlay; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>"); }

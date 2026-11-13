@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { DIVE_CHAPTERS, DIVE_INTRO, HERO_LINES } from "../data.js";
+import { DIVE_CHAPTERS, DIVE_INTRO, DIVE_PALETTE, DIVE_PALETTES, HERO_LINES } from "../data.js";
+import { worldColors } from "../palette.js";
 import { useReducedMotion, useScroll } from "../hooks.js";
 
 // World units are CSS pixels along z. The camera moves forward by `s`; an object at world z sits at z + s on screen.
@@ -18,14 +19,12 @@ const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t
 const seen = (z) => smooth(-2400, -600, z) * (1 - smooth(0, 350, z));
 const cardZ = (i) => -(FIRST + i) * GAP;
 
-// Colour worlds. The scene's colours blend smoothly from one chapter's hue to the next as the camera travels between them.
-const HUES = DIVE_CHAPTERS.map((c) => c.hue);
-const LUMS = DIVE_CHAPTERS.map((c) => c.lum);
-const hueAt = (s) => {                       // s is travel in px; chapter i is centred at its giant word
-  const f = clamp((s - (cardZ(0) * -1)) / GAP, 0, N - 1);
-  const i = Math.min(N - 2, Math.floor(f)), t = smooth(0, 1, f - i);
-  let a = HUES[i], b = HUES[i + 1]; if (b - a > 180) a += 360; if (a - b > 180) b += 360;
-  return { h: (a + (b - a) * t + 360) % 360, l1: LUMS[i][0] + (LUMS[i + 1][0] - LUMS[i][0]) * t, l2: LUMS[i][1] + (LUMS[i + 1][1] - LUMS[i][1]) * t };
+// Colour worlds. The hue drifts along the palette's arc as the camera travels, so every moment has its own colour and
+// neighbouring chapters are close relatives at the same lightness (see palette.js and DIVE_PALETTES in data.js).
+const PAL = DIVE_PALETTES[DIVE_PALETTE];
+const hueAt = (s) => {
+  const f = clamp((s - (cardZ(0) * -1)) / GAP, 0, N - 1) / (N - 1);   // 0 at the first chapter, 1 at the last
+  return PAL.arc[0] + (PAL.arc[1] - PAL.arc[0]) * f;
 };
 const STREAKS = 26;
 const streakSeed = Array.from({ length: STREAKS }, (_, k) => {
@@ -121,12 +120,12 @@ export default function Dive() {
     c.v += ((s - c.lastS) - c.v) * 0.35; c.lastS = s;                 // smoothed travel speed in px per frame
     c.s = s;
     write();
-    // 2) colour world: the chapter's own hue, blended with the next one while travelling between them
-    const w = hueAt(s);
+    // 2) colour world: one hue drifting along the palette's arc; the colours are OKLCH at fixed lightness steps per theme
     const lt = document.documentElement.dataset.theme === "light";
-    const sat = lt ? 80 : 92, sat2 = lt ? 82 : 95;
-    stage.current.style.setProperty("--c1", `hsl(${w.h.toFixed(1)} ${sat}% ${lt ? (w.l1 * 100).toFixed(1) : 70}%)`);
-    stage.current.style.setProperty("--c2", `hsl(${((w.h + 45) % 360).toFixed(1)} ${sat2}% ${lt ? (w.l2 * 100).toFixed(1) : 62}%)`);
+    const w = worldColors(lt ? "light" : "dark", hueAt(s), PAL);
+    stage.current.style.setProperty("--c1", w.c1);
+    stage.current.style.setProperty("--c2", w.c2);
+    stage.current.style.setProperty("--pop", w.pop);
     // 1) speed streaks: they stretch and brighten with how fast you scroll, then fade away when you stop (see paintSpeed)
     c.lastT = performance.now();
     if (!c.loop) c.loop = requestAnimationFrame(speedLoop);
