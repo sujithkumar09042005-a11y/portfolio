@@ -9,11 +9,7 @@ function useActiveSection(ids) {
       entries.forEach((e) => { if (e.isIntersecting) setActive(e.target.id); });
     }, { rootMargin: "-45% 0px -50% 0px" });
     ids.forEach((id) => { const el = document.getElementById(id); if (el) io.observe(el); });
-    // the About chapter is an anchor point inside the pinned dive, so watch the dive itself and call it "about" while it runs
-    const dive = document.getElementById("home");
-    const io2 = new IntersectionObserver(([e]) => { if (e.isIntersecting && e.boundingClientRect.top <= 0) setActive("about"); }, { rootMargin: "-45% 0px -50% 0px" });
-    if (dive) io2.observe(dive);
-    return () => { io.disconnect(); io2.disconnect(); };
+    return () => io.disconnect();
   }, [ids]);
   return active;
 }
