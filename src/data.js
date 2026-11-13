@@ -14,18 +14,6 @@ export const NAV = [
   { id: "contact", label: "Contact" },
 ];
 
-export const PHRASES = [
-  "Spring Boot REST APIs",
-  "React and TypeScript interfaces",
-  "AI-assisted products",
-  "keyboard-accessible experiences",
-];
-
-export const MARQUEE = ["Full-stack", "Spring Boot", "React", "TypeScript", "MySQL"];
-
-export const STATEMENT =
-  "I am a full-stack developer finishing my B.E. in Electronics and Communication Engineering. I build Java and Spring Boot backends with React frontends, and I care about interfaces that are fast, keyboard-accessible and easy to use. Lately I have been combining that with AI tools, from a Gemini-powered trip planner to AI-assisted development.";
-
 export const FACTS = [
   ["Based in", "India"],
   ["Focus", "Full-stack web development"],
@@ -34,8 +22,8 @@ export const FACTS = [
 ];
 
 export const STATS = [
-  { to: 3, label: "Full-stack projects built" },
-  { to: 6, label: "Months of full-stack internship" },
+  { to: 3, label: "Projects built" },
+  { to: 6, label: "Months as a full-stack intern" },
   { to: 3, label: "Certifications earned" },
 ];
 
@@ -93,11 +81,15 @@ export const SOCIALS = [
 
 export const FOOTER_SITEMAP = NAV;
 
-// The intro dive: one request travelling forward through the stack, one chapter per layer.
+// The dive: one request travelling forward through the stack, then the person behind it. One chapter per card.
+// The cards for these chapters live in Dive.jsx and must stay in the same order.
 export const DIVE_INTRO = "Full-stack developer. Scroll to send a request.";
 export const DIVE_CHAPTERS = [
-  { layer: "React", title: "Every app starts as a request.", text: "A user taps a button and React sends it." },
-  { layer: "Spring Boot", title: "An API decides what happens next.", text: "Spring Boot checks the request and calls the service." },
-  { layer: "MySQL", title: "The data lives in a database.", text: "Hibernate asks MySQL for the rows." },
-  { layer: "Response", title: "I build every layer of it.", text: "The front end, the API and the database, all by one person.", cta: true },
+  { label: "React", title: "Every app starts as a request.", text: "A user taps a button and React sends it." },
+  { label: "Spring Boot", title: "An API decides what happens next.", text: "Spring Boot checks the request and calls the service." },
+  { label: "MySQL", title: "The data lives in a database.", text: "Hibernate asks MySQL for the rows." },
+  { label: "Response", title: "I build every layer of it.", text: "The front end, the API and the database, all by one person." },
+  { label: "About", anchor: "about", title: "The developer behind it.", text: "I am finishing a B.E. in Electronics and Communication Engineering. I build full-stack apps in Java, Spring Boot and React, and I care about interfaces that are fast, keyboard-accessible and easy to use." },
+  { label: "Skills", title: "The tools I work with.", text: "Java and Spring Boot on the server, React and TypeScript on the client, MySQL underneath." },
+  { label: "Numbers", title: "Where it stands today.", text: "Three projects, a six-month internship and three certifications.", cta: true },
 ];

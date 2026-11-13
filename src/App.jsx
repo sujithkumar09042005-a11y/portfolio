@@ -1,10 +1,8 @@
 import { lazy, Suspense } from "react";
-import About from "./components/About.jsx";
 import Contact from "./components/Contact.jsx";
 import Experience from "./components/Experience.jsx";
 import Footer from "./components/Footer.jsx";
 import Dive from "./components/Dive.jsx";
-import Marquee from "./components/Marquee.jsx";
 import Nav from "./components/Nav.jsx";
 import Work from "./components/Work.jsx";
 import { useReducedMotion } from "./hooks.js";
@@ -20,8 +18,6 @@ export default function App() {
       <Nav />
       <main>
         <Dive />
-        <Marquee />
-        <About />
         <Work />
         <Experience />
         <Contact />
