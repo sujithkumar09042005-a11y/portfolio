@@ -34,7 +34,7 @@ export const DIVE_SCENES = [
   {
     kind: "head", section: 0, label: "About", anchor: "about", big: "About",
     title: "Full-Stack Developer.",
-    words: [["Java", -33, -30, 200], ["Spring Boot", 29, -33, -300, true], ["React", -31, 26, -500], ["TypeScript", 33, 22, 100], ["MySQL", 3, 36, -700]],
+    words: [["Java", -33, -30, 200], ["Spring Boot", 29, -33, -300, true], ["React", 22, 31, -500], ["TypeScript", 36, 24, 100], ["MySQL", -14, 37, -700]],
   },
   {
     kind: "body", section: 0, label: "About",
@@ -44,12 +44,12 @@ export const DIVE_SCENES = [
       "Tools: Java, JavaScript, TypeScript, Spring Boot, React, MySQL, Git.",
       "Certified: the Complete Full-Stack Web Development Bootcamp on Udemy (62 hours), plus Claude 101 and Introduction to Claude Cowork from Anthropic's Claude Academy.",
     ],
-    words: [["Hibernate", -34, -31, 240], ["REST APIs", 31, -30, -260, true], ["Tailwind CSS", -32, 31, 120], ["Git", 33, 28, -450], ["Spring", 4, -37, -650]],
+    words: [["Hibernate", -35, -36, 240], ["REST APIs", 31, -30, -260, true], ["Tailwind CSS", -36, 33, 120], ["Git", 34, 27, -450], ["Spring", 4, -37, -650]],
   },
   {
     kind: "head", section: 1, label: "Projects", anchor: "work", big: "Projects",
     title: "Three things I built.",
-    words: [["React", -33, -30, 250], ["Gemini", 30, -33, -250, true], ["Recharts", -31, 26, 120], ["Rider tracking", 28, 23, -450], ["Offline", 5, 36, -650]],
+    words: [["React", -33, -30, 250], ["Gemini", 30, -33, -250, true], ["Recharts", -31, 26, 120], ["Rider tracking", 25, 31, -450], ["Offline", 5, 36, -650]],
   },
   {
     kind: "dense", section: 1, label: "Projects",
@@ -58,12 +58,12 @@ export const DIVE_SCENES = [
       { title: "Voyager", text: "An AI travel discovery platform with live GPS distances, a Gemini-powered trip planner, day-by-day itineraries and keyboard-accessible navigation.", stack: "React, TypeScript, Tailwind CSS and Google Gemini.", href: GITHUB, link: "View Voyager on GitHub" },
       { title: "SplitWise", text: "An offline-first bill-splitting app that simplifies group debts to the fewest settlements, with itemized receipts, charts and PDF export.", stack: "React, Vite, Tailwind CSS and Recharts.", href: GITHUB, link: "View SplitWise on GitHub" },
     ],
-    words: [["Spring Boot", -34, -36, 220, true], ["MySQL", 31, -37, -260], ["TypeScript", -30, 36, 120], ["Vite", 32, 35, -450]],
+    words: [["Spring Boot", -34, -36, 220, true], ["MySQL", 31, -37, -260], ["TypeScript", -30, 30, 120], ["Vite", 32, 35, -450]],
   },
   {
     kind: "head", section: 2, label: "Experience", anchor: "experience", big: "Experience",
     title: "Where I studied and worked.",
-    words: [["Hibernate", -33, -30, 240], ["Spring Boot", 30, -33, -260, true], ["JDBC", -30, 26, 110], ["MySQL", 30, 23, -450], ["J2EE", 4, 36, -650]],
+    words: [["Hibernate", -33, -30, 240], ["Spring Boot", 30, -33, -260, true], ["JDBC", -37, 34, 110], ["MySQL", 30, 23, -450], ["J2EE", 4, 36, -650]],
   },
   {
     kind: "dense", section: 2, label: "Experience", cta: true,
@@ -72,7 +72,7 @@ export const DIVE_SCENES = [
       { n: 2, when: "6 months", title: "TAP Academy", org: "Java Full-Stack Intern, Bangalore", text: "Trained across frontend, backend and database work, built backend applications with Spring, Hibernate, J2EE, JSP and JDBC on MySQL, and delivered a real-time project." },
       { n: 3, when: "Current", title: "ReluSys", org: "Software Trainee", text: "" },
     ],
-    words: [["DSA", -34, -36, 220, true], ["Smart India Hackathon", 26, -37, -280], ["LeetCode", -31, 36, 120], ["Java", 33, 35, -450]],
+    words: [["DSA", -34, -36, 220, true], ["Smart India Hackathon", 26, -37, -280], ["LeetCode", -31, 31, 120], ["Java", 33, 35, -450]],
   },
 ];
 

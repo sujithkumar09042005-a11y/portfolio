@@ -148,6 +148,7 @@ export default function Dive() {
   const items = useRef([]);
   const name = useRef(null);
   const stage = useRef(null);
+  const zone = useRef({ l: 0, t: 0, r: 0, b: 0 });
   const streaks = useRef([]);
   const st = useRef({ s: 0, px: 0, py: 0, tx: 0, ty: 0, v: 0, lastS: 0, phase: 0, lastT: 0, loop: 0 });
   const [active, setActive] = useState(-1);
@@ -217,7 +218,15 @@ export default function Dive() {
     });
     words.current.forEach((el, k) => {
       if (!el) return;
-      const o = seen(WORDS[k].z + s) * 0.9;
+      let o = seen(WORDS[k].z + s) * 0.9;
+      if (o > 0.02) {
+        // where the word is on screen right now: its spot, scaled about the vanishing point by the perspective of its depth
+        const kk = 1000 / (1000 - (WORDS[k].z + s)), W = innerWidth, Hh = innerHeight, cx = W / 2, cy = Hh * 0.46;
+        const px = cx + (WORDS[k].x * W / 100) * kk, py = cy + (WORDS[k].y * Hh / 100 + Hh * 0.04) * kk, z = zone.current;
+        const dx = Math.max(z.l - px, 0, px - z.r), dy = Math.max(z.t - py, 0, py - z.b), d = Math.hypot(dx, dy);
+        const copyUp = items.current[active + 1] ? parseFloat(items.current[active + 1].style.opacity || "0") : 0;
+        o *= 1 - copyUp * (1 - clamp(d / 90, 0, 1));            // fully hidden behind the text, back to normal 90px away from it
+      }
       el.style.opacity = o.toFixed(3);
       if (o > 0.02) {   // a slow drift so the floating words are never still
         el.style.setProperty("--dx", `${(Math.sin(s * 0.0016 + k * 1.7) * 22).toFixed(1)}px`);
@@ -255,6 +264,22 @@ export default function Dive() {
     raf = requestAnimationFrame(tick);
     return () => { cancelAnimationFrame(raf); io.disconnect(); window.removeEventListener("pointermove", move); };
   }, [reduce]);
+
+  // Where the active scene's readable text sits, so floating words can fade out as they pass behind it. Measured only when the
+  // scene changes or the window resizes (the text is flat and still while it is read).
+  useEffect(() => {
+    const measure = () => {
+      const li = items.current[active + 1];
+      if (!li) return;
+      const z = zone.current, w = li.offsetWidth, h = li.offsetHeight;
+      const inner = li.querySelector(".scene-body, .scene-dense, .scene-cap");
+      const iw = inner ? Math.min(w, inner.scrollWidth) : w;
+      z.l = li.offsetLeft + (w - iw) / 2; z.r = z.l + iw; z.t = li.offsetTop; z.b = li.offsetTop + h;
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [active]);
 
   const chapter = chapterOf(active);
   const label = active < 0 ? "Start" : DIVE_SECTIONS[SCENES[active].section];
