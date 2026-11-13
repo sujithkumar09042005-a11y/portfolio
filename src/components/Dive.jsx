@@ -26,6 +26,8 @@ const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
 // Fades in from far away, full while near, fades out as it passes the camera.
 const seen = (z) => smooth(-2400, -600, z) * (1 - smooth(0, 350, z));
+// A giant heading word arrives later than the floating words do: it stays out of sight while the scene before it is being read.
+const seenBig = (z) => smooth(-1500, -450, z) * (1 - smooth(0, 350, z));
 const cardZ = (i) => -POS[i];
 
 // Colour worlds. The hue drifts along the palette's arc as the camera travels, so every moment has its own colour and
@@ -164,7 +166,7 @@ export default function Dive() {
   const stage = useRef(null);
   const zone = useRef({ l: 0, t: 0, r: 0, b: 0 });
   const streaks = useRef([]);
-  const st = useRef({ s: 0, px: 0, py: 0, tx: 0, ty: 0, v: 0, lastS: 0, phase: 0, lastT: 0, loop: 0 });
+  const st = useRef({ s: 0, px: 0, py: 0, tx: 0, ty: 0, v: 0, lastS: 0, phase: 0, lastT: 0, lastFrame: 0, loop: 0, calm: 0 });
   const [active, setActive] = useState(-1);
   useEffect(() => { startPointer(); }, []);
 
@@ -183,17 +185,17 @@ export default function Dive() {
       const run = (((c.phase * 0.5 + k * 400) % 1600) + 1600) % 1600;
       const t = dir > 0 ? run / 1600 : 1 - run / 1600;
       el.style.setProperty("--t", t.toFixed(3));
-      el.style.opacity = (speed * (0.25 + 0.75 * Math.sin(Math.PI * t))).toFixed(3);
+      el.style.opacity = (speed * (0.25 + 0.75 * Math.sin(Math.PI * t)) * (1 - c.calm * 0.85)).toFixed(3);
     });
   };
   const speedLoop = () => {
-    const c = st.current;
-    c.loop = 0;
-    if (performance.now() - c.lastT > 70) c.v *= 0.9;          // no scroll for a moment: slow down
-    c.phase += c.v;
+    const c = st.current, now = performance.now(), f = clamp((now - (c.lastFrame || now)) / 16.7, 0.2, 6);
+    c.lastFrame = now; c.loop = 0;
+    if (now - c.lastT > 70) c.v *= Math.pow(0.9, f);          // no scroll for a moment: slow down, at the same pace whatever the frame rate
+    c.phase += c.v * f;
     paintSpeed();
     if (Math.abs(c.v) > 0.4) c.loop = requestAnimationFrame(speedLoop);
-    else { c.v = 0; paintSpeed(); }
+    else { c.v = 0; c.lastFrame = 0; paintSpeed(); }
   };
   useEffect(() => () => cancelAnimationFrame(st.current.loop), []);
 
@@ -206,12 +208,17 @@ export default function Dive() {
     c.v += ((s - c.lastS) - c.v) * 0.35; c.lastS = s;                 // smoothed travel speed in px per frame
     c.s = s;
     write();
+    let calm = 0;
+    for (let k = 0; k <= N; k++) { const o = copyOpacity(copyZ(s, k)); const kind = k === 0 ? "head" : SCENES[k - 1].kind; calm = Math.max(calm, o * (kind === "head" ? 0.3 : 0.75)); }
+    c.calm = calm;
+    stage.current.style.setProperty("--calm", calm.toFixed(3));
     // 2) colour world: one hue drifting along the palette's arc; the colours are OKLCH at fixed lightness steps per theme
     const lt = document.documentElement.dataset.theme === "light";
     const w = worldColors(lt ? "light" : "dark", hueAt(s), PAL);
     stage.current.style.setProperty("--c1", w.c1);
     stage.current.style.setProperty("--c2", w.c2);
     stage.current.style.setProperty("--pop", w.pop);
+    stage.current.style.setProperty("--c1-text", w.c1text);
     chapterColors.c1 = w.c1; chapterColors.c2 = w.c2; chapterColors.pop = w.pop;
     // 1) speed streaks: they stretch and brighten with how fast you scroll, then fade away when you stop (see paintSpeed)
     c.lastT = performance.now();
@@ -224,15 +231,15 @@ export default function Dive() {
     bar.current.style.transform = `scaleX(${p.toFixed(4)})`;
     name.current.style.opacity = String(1 - smooth(0, 350, s));
     spin.current.style.transform = `rotateZ(${(s * 0.004).toFixed(2)}deg)`;
-    rings.current.forEach((el, k) => { if (el) el.style.opacity = (seen(-k * RING_GAP + s) * 0.5).toFixed(3); });
+    rings.current.forEach((el, k) => { if (el) el.style.opacity = (seen(-k * RING_GAP + s) * 0.5 * (1 - calm * 0.7)).toFixed(3); });
     bigs.current.forEach((el, i) => {
       if (!el) return;
-      el.style.opacity = seen(cardZ(i) + s).toFixed(3);
+      el.style.opacity = seenBig(cardZ(i) + s).toFixed(3);
       el.style.setProperty("--rot", `${(Math.sin(s * 0.0011 + i * 1.3) * 1.6).toFixed(2)}deg`);
     });
     words.current.forEach((el, k) => {
       if (!el) return;
-      let o = seen(WORDS[k].z + s) * 0.9;
+      let o = seen(WORDS[k].z + s) * 0.9 * (1 - calm * 0.6);
       if (o > 0.02) {
         // where the word is on screen right now: its spot, scaled about the vanishing point by the perspective of its depth
         const kk = 1000 / (1000 - (WORDS[k].z + s)), W = innerWidth, Hh = innerHeight, cx = W / 2, cy = Hh * 0.46;

@@ -477,3 +477,37 @@ main, .footer { position: relative; z-index: 1; }
 
 /* the soft backing behind scene text exists only to keep it readable over the moving tunnel; the plain version has no tunnel */
 .dive.is-static .dive-copy > li::before { display: none !important; }
+
+/* ---------- the content belongs to the scene ---------- */
+/* no panel behind the text: the world behind it quietens instead (see --calm, set by the scroll code) */
+.dive-copy > li::before, .dive.is-static .dive-copy > li::before { display: none !important; }
+.dive-light { opacity: calc(var(--lit) * (1 - var(--calm, 0) * 0.55)); }
+[data-theme="light"] .dive-light { opacity: calc(var(--lit) * 0.7 * (1 - var(--calm, 0) * 0.55)); }
+
+/* one grid: every block of the page shares the same left and right edge as the nav, the progress label and Contact */
+.section { max-width: calc(1152px + 2 * var(--pad)); }
+
+/* the whole page sits on one column, so the nav, the scenes, the progress row, Contact and the footer share the same edges at every width */
+:root { --col: min(1152px, calc(100vw - 2 * var(--pad))); }
+.nav { padding-inline: max(var(--pad), calc((100vw - 1152px) / 2)); }
+.dive-ui { padding-inline: max(var(--pad), calc((100vw - 1152px) / 2)); }
+.footer { padding-inline: 0; }
+.foot-top, .foot-bar { width: var(--col); max-width: none; margin-inline: auto; }
+.wordmark { width: var(--col); margin-inline: auto; }
+.dive-copy > li.scene--about, .dive-copy > li.scene--projects, .dive-copy > li.scene--timeline { width: var(--col); }
+@media (max-width: 52rem) { .dive-copy > li.scene--about, .dive-copy > li.scene--projects, .dive-copy > li.scene--timeline { width: var(--col); } }
+
+/* large type has side bearings, so its ink starts a little inside its box; pull it out by a fraction of its size so the ink lines up with the column */
+.index-name { margin-left: -0.045em; }
+.about-statement { margin-left: -0.035em; }
+.tl-title { margin-left: -0.03em; }
+.scene-index { margin-inline: 0; }
+.index-row { padding-inline: 0; }
+
+/* with no panel behind the text, the smaller copy is a little brighter so it holds its contrast over the moving rings */
+.tl-text, .about-fact dd, .index-line { color: color-mix(in srgb, var(--text) 94%, var(--bg)); }
+.tl-text, .about-fact dd { text-shadow: 0 0 14px color-mix(in srgb, var(--bg) 85%, transparent); }
+.index-line { text-shadow: 0 0 14px color-mix(in srgb, var(--bg) 85%, transparent); }
+
+/* small coloured labels use the text-strength accent, which clears 4.5:1 even over the tinted tunnel in the light theme */
+.about-fact dt, .index-stack, .tl-when { color: var(--c1-text, var(--c1)); }

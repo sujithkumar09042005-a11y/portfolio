@@ -44,8 +44,8 @@ export const css = (L, C, H) => `oklch(${(L * 100).toFixed(1)}% ${C.toFixed(3)} 
 // `cap` keeps chroma calm: the skill's character-first guidance is that restrained chroma reads as refined, so no colour
 // here asks for more than 0.15 even where the gamut would allow it.
 export const STEPS = {
-  dark: { c1: 0.74, c2: 0.62, pop: 0.82, chroma: 0.94, cap: 0.15 },
-  light: { c1: 0.5, c2: 0.58, pop: 0.5, chroma: 0.94, cap: 0.15 },
+  dark: { c1: 0.74, c2: 0.62, pop: 0.82, chroma: 0.94, cap: 0.15, text: 0.74 },
+  light: { c1: 0.5, c2: 0.58, pop: 0.5, chroma: 0.94, cap: 0.15, text: 0.38 },
 };
 
 /** The three colours of a chapter's world at a given hue, in OKLCH, as CSS strings. */
@@ -57,6 +57,7 @@ export function worldColors(theme, hue, palette) {
     c1: css(s.c1, ch(s.c1, hue), hue),
     c2: css(s.c2, ch(s.c2, h2), h2),
     pop: css(s.pop, ch(s.pop, palette.pop), palette.pop),
+    c1text: css(s.text, ch(s.text, hue), hue),   // the same hue, a little darker in light theme, for small coloured labels
   };
 }
 

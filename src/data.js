@@ -50,7 +50,7 @@ export const DIVE_SCENES = [
   {
     kind: "head", section: 1, label: "Projects", anchor: "work", big: "Projects",
     title: "Three things I built.",
-    words: [["React", -33, -30, 250], ["Gemini", 30, -33, -250, true], ["Recharts", -31, 26, 120], ["Rider tracking", 25, 31, -450], ["Offline", 5, 36, -650]],
+    words: [["React", -33, -30, 250], ["Gemini", 30, -33, -250, true], ["Recharts", -31, 26, 120], ["Rider tracking", 26, 29, -450], ["Offline", 8, 37, -650]],
   },
   {
     kind: "projects", section: 1, label: "Projects",
