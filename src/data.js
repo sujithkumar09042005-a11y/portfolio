@@ -23,26 +23,27 @@ export const FOOTER_SITEMAP = NAV;
 
 // The whole story lives in the dive, in this order: the name, About (a heading scene, then its content), Projects (a heading
 // scene, then all three projects together), Experience (a heading scene, then college, TAP Academy and ReluSys in order).
-// Contact is a separate section after the dive. Each scene has a `kind`:
-//   head   a giant word you fly toward and one line under it
-//   body   a title, a paragraph and a few extra lines in the middle of the scene
-//   dense  several entries side by side (`items`)
+// Contact is a separate section after the dive. Each scene has a `kind`, and each kind has its own layout:
+//   head      a giant word you fly toward and one line under it
+//   about     a large statement on the left and a quiet column of facts on the right
+//   projects  the projects as an index: one row each, with a big name, a line about it, its stack and a link
+//   timeline  one vertical line with the steps in order, each with its dates beside it
 // `words` are floating words at other depths, as [text, x in vw, y in vh, depth offset in px, accent].
 export const DIVE_INTRO = "Full-stack developer. Scroll to move forward.";
 export const DIVE_SECTIONS = ["About", "Projects", "Experience"];
 export const DIVE_SCENES = [
   {
-    kind: "head", section: 0, label: "About", anchor: "about", big: "About",
-    title: "Full-Stack Developer.",
-    words: [["Java", -33, -30, 200], ["Spring Boot", 29, -33, -300, true], ["React", 22, 31, -500], ["TypeScript", 36, 24, 100], ["MySQL", -14, 37, -700]],
+    kind: "head", section: 0, label: "About", anchor: "about", big: "Full Stack Developer",
+    title: "Java, Spring Boot and React, front to back.",
+    words: [["Java", -33, -30, 200], ["Spring Boot", 29, -33, -300, true], ["React", 28, 30, -500], ["TypeScript", 36, 24, 100], ["MySQL", -14, 37, -700]],
   },
   {
-    kind: "body", section: 0, label: "About",
-    title: "The developer behind it.",
-    text: "I am finishing a B.E. in Electronics and Communication Engineering in India, with a CGPA of 8.4, and I build full-stack apps in Java, Spring Boot and React. I care about interfaces that are fast, keyboard-accessible and easy to use, and I have started combining that with AI tools.",
-    extra: [
-      "Tools: Java, JavaScript, TypeScript, Spring Boot, React, MySQL, Git.",
-      "Certified: the Complete Full-Stack Web Development Bootcamp on Udemy (62 hours), plus Claude 101 and Introduction to Claude Cowork from Anthropic's Claude Academy.",
+    kind: "about", section: 0, label: "About",
+    statement: "I build full-stack apps from the database to the screen, and I care that they are fast, keyboard-accessible and easy to use.",
+    facts: [
+      ["Studying", "B.E. in Electronics and Communication Engineering, CGPA 8.4, India"],
+      ["Works in", "Java, Spring Boot, React, TypeScript, MySQL"],
+      ["Certified", "Full-Stack Web Development Bootcamp (62 hours), Claude 101, Claude Cowork"],
     ],
     words: [["Hibernate", -35, -36, 240], ["REST APIs", 31, -30, -260, true], ["Tailwind CSS", -36, 33, 120], ["Git", 34, 27, -450], ["Spring", 4, -37, -650]],
   },
@@ -52,11 +53,11 @@ export const DIVE_SCENES = [
     words: [["React", -33, -30, 250], ["Gemini", 30, -33, -250, true], ["Recharts", -31, 26, 120], ["Rider tracking", 25, 31, -450], ["Offline", 5, 36, -650]],
   },
   {
-    kind: "dense", section: 1, label: "Projects",
+    kind: "projects", section: 1, label: "Projects",
     items: [
-      { title: "FeastFlow", text: "A full-stack food delivery app with Spring Boot REST APIs, a MySQL database for orders and delivery records, a live rider-tracking simulator and dark mode.", stack: "React, Spring Boot and MySQL.", href: GITHUB, link: "View FeastFlow on GitHub" },
-      { title: "Voyager", text: "An AI travel discovery platform with live GPS distances, a Gemini-powered trip planner, day-by-day itineraries and keyboard-accessible navigation.", stack: "React, TypeScript, Tailwind CSS and Google Gemini.", href: GITHUB, link: "View Voyager on GitHub" },
-      { title: "SplitWise", text: "An offline-first bill-splitting app that simplifies group debts to the fewest settlements, with itemized receipts, charts and PDF export.", stack: "React, Vite, Tailwind CSS and Recharts.", href: GITHUB, link: "View SplitWise on GitHub" },
+      { title: "FeastFlow", line: "Food delivery with a live rider tracker.", stack: "React, Spring Boot, MySQL", href: GITHUB, link: "FeastFlow on GitHub" },
+      { title: "Voyager", line: "An AI trip planner that builds day-by-day itineraries.", stack: "React, TypeScript, Google Gemini", href: GITHUB, link: "Voyager on GitHub" },
+      { title: "SplitWise", line: "Group bills settled in the fewest payments, offline.", stack: "React, Vite, Recharts", href: GITHUB, link: "SplitWise on GitHub" },
     ],
     words: [["Spring Boot", -34, -36, 220, true], ["MySQL", 31, -37, -260], ["TypeScript", -30, 30, 120], ["Vite", 32, 35, -450]],
   },
@@ -66,11 +67,11 @@ export const DIVE_SCENES = [
     words: [["Hibernate", -33, -30, 240], ["Spring Boot", 30, -33, -260, true], ["JDBC", -37, 34, 110], ["MySQL", 30, 23, -450], ["J2EE", 4, 36, -650]],
   },
   {
-    kind: "dense", section: 2, label: "Experience", cta: true,
+    kind: "timeline", section: 2, label: "Experience", cta: true,
     items: [
-      { n: 1, when: "Expected 2026", title: "College", org: "B.E. in Electronics and Communication, Sri Ramakrishna Institute of Technology", text: "A CGPA of 8.4, alongside data structures and algorithms practice on LeetCode and Smart India Hackathon 2024." },
-      { n: 2, when: "6 months", title: "TAP Academy", org: "Java Full-Stack Intern, Bangalore", text: "Trained across frontend, backend and database work, built backend applications with Spring, Hibernate, J2EE, JSP and JDBC on MySQL, and delivered a real-time project." },
-      { n: 3, when: "Current", title: "ReluSys", org: "Software Trainee", text: "" },
+      { when: "Expected 2026", title: "College", org: "Sri Ramakrishna Institute of Technology", text: "B.E. in Electronics and Communication, with a CGPA of 8.4. Data structures practice on LeetCode and Smart India Hackathon 2024." },
+      { when: "6 months", title: "TAP Academy", org: "Java Full-Stack Intern, Bangalore", text: "Built backend applications with Spring, Hibernate, J2EE, JSP and JDBC on MySQL, and delivered a real-time project." },
+      { when: "Now", title: "ReluSys", org: "Software Trainee", text: "" },
     ],
     words: [["DSA", -34, -36, 220, true], ["Smart India Hackathon", 26, -37, -280], ["LeetCode", -31, 31, 120], ["Java", 33, 35, -450]],
   },

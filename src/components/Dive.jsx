@@ -13,7 +13,7 @@ const FIRST = 1700;                // the first scene starts 1700px away, so the
 // How far apart the scenes sit: a heading scene is a short beat, a content scene holds still long enough to read.
 // Tuned by simulation over every scroll position: no two scenes' text at once, no dead stretch, and each scene readable for
 // about 640 to 730px of scrolling.
-const SPAN = { head: 1100, body: 1100, dense: 1100 };
+const SPAN = { head: 1100, about: 1100, projects: 1100, timeline: 1100 };
 const POS = [];                    // z distance at which each scene is in front of the camera
 SCENES.forEach((sc, i) => POS.push((i === 0 ? FIRST : POS[i - 1]) + (i === 0 ? 0 : SPAN[sc.kind])));
 const D = POS[N - 1];              // total travel: the last scene ends at the camera plane
@@ -21,7 +21,6 @@ const RING_GAP = 250;
 const RINGS = Math.ceil((D + 2400) / RING_GAP);
 const SECTION_VH = Math.round(100 + D * 0.0833);   // about 0.75 screen pixels of scrolling per pixel of travel
 const SECTION_VH_M = Math.round(100 + D * 0.0688);
-const CONTENT = SCENES.map((sc) => sc.kind !== "head");   // scenes whose copy sits in the middle of the scene
 
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
@@ -45,7 +44,7 @@ const streakSeed = Array.from({ length: STREAKS }, (_, k) => {
 // The readable copy flies with the scene: it arrives from the vanishing point at the speed of the world, slows to a
 // near-stop while you read it, then flies past you. Index 0 is the intro, 1..N are the chapters.
 // Tuned by simulation: no two texts visible together, no dead stretches, and the text stays with its giant word.
-const HOLDS = { head: 320, body: 380, dense: 380 }, INTRO_HOLD = 700, OFFSET = 300;
+const HOLDS = { head: 320, about: 380, projects: 380, timeline: 380 }, INTRO_HOLD = 700, OFFSET = 300;
 const REST = 0.7;                       // the middle 70% of the hold is perfectly flat, so the text is pixel-sharp while you read it
 const centre = (c) => (c === 0 ? 0 : POS[c - 1] - OFFSET);
 const hold = (c) => (c === 0 ? INTRO_HOLD : HOLDS[SCENES[c - 1].kind]);
@@ -92,41 +91,56 @@ function HeadScene({ c, gate }) {
   );
 }
 
-/** A content scene: a title, a paragraph and a few lines, centred in the scene. */
-function BodyScene({ c, gate }) {
+/** About: one large statement on the left, a quiet column of facts on the right. Reads as a sentence and its footnotes. */
+function AboutScene({ c, gate }) {
   return (
-    <div className="scene-body">
-      <h2 className="scene-h"><Words text={c.title} gate={gate} /></h2>
-      <div className="dive-body">
-        <p><LiveText text={c.text} kind="body" unit="words" perFrame gate={gate} /></p>
-        {c.extra && c.extra.map((e) => <p key={e} className="dive-stack"><LiveText text={e} kind="body" unit="words" perFrame gate={gate} /></p>)}
-      </div>
+    <div className="scene-about">
+      <p className="about-statement"><LiveText text={c.statement} kind="title" unit="words" perFrame gate={gate} outer="tw" /></p>
+      <dl className="about-facts">
+        {c.facts.map(([k, v]) => (
+          <div key={k} className="about-fact"><dt>{k}</dt><dd><LiveText text={v} kind="body" unit="words" perFrame gate={gate} /></dd></div>
+        ))}
+      </dl>
     </div>
   );
 }
 
-/** A dense scene: several entries laid out side by side across the scene, each with its own small heading. */
-function DenseScene({ c, gate, tab }) {
+/** Projects: an index. Each project is one row with its name set large, a single line about it, its stack and a link. */
+function ProjectsScene({ c, gate, tab }) {
   return (
-    <div className={"scene-dense" + (c.items[0].n ? " is-steps" : "")}>
-      <ol className="dense-list">
+    <ol className="scene-index">
+      {c.items.map((it, k) => (
+        <li key={it.title} className="index-row" style={{ "--k": k }}>
+          <h3 className="index-name"><LiveText text={it.title} kind="title" unit="whole" perFrame gate={gate} /></h3>
+          <p className="index-line"><LiveText text={it.line} kind="body" unit="words" perFrame gate={gate} /></p>
+          <p className="index-stack">{it.stack}</p>
+          <a className="index-link" href={it.href} target="_blank" rel="noopener" tabIndex={tab}>
+            <span>{it.link}</span><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" /></svg>
+            <span className="visually-hidden"> (opens in a new tab)</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+/** Experience: a timeline. One line runs down the scene, each step hangs off it with its dates beside it, in order. */
+function TimelineScene({ c, gate, tab }) {
+  return (
+    <div className="scene-timeline">
+      <ol className="tl-list">
         {c.items.map((it, k) => (
-          <li key={it.title} className="dense-item" style={{ "--k": k }}>
-            {it.n && <span className="dense-n" aria-hidden="true">{it.n}</span>}
-            <h3 className="dense-t"><LiveText text={it.title} kind="title" unit="words" perFrame gate={gate} /></h3>
-            {it.when && <p className="dense-when">{it.when}</p>}
-            {it.org && <p className="dense-org">{it.org}</p>}
-            {it.text ? <p className="dense-p"><LiveText text={it.text} kind="body" unit="words" perFrame gate={gate} /></p> : <p className="dense-p dense-now">Currently working here as a software trainee.</p>}
-            {it.stack && <p className="dense-stack">{it.stack}</p>}
-            {it.href && <a className="dive-link" href={it.href} target="_blank" rel="noopener" tabIndex={tab}>{it.link}<span className="visually-hidden"> (opens in a new tab)</span></a>}
+          <li key={it.title} className={"tl-step" + (k === c.items.length - 1 ? " is-now" : "")} style={{ "--k": k }}>
+            <p className="tl-when">{it.when}</p>
+            <div className="tl-body">
+              <h3 className="tl-title"><LiveText text={it.title} kind="title" unit="whole" perFrame gate={gate} /></h3>
+              <p className="tl-org">{it.org}</p>
+              {it.text && <p className="tl-text"><LiveText text={it.text} kind="body" unit="words" perFrame gate={gate} /></p>}
+            </div>
           </li>
         ))}
       </ol>
-      {c.cta && (
-        <div className="dive-cta">
-          <a href="#contact" className="btn solid" tabIndex={tab}><span>Get in touch</span></a>
-        </div>
-      )}
+      {c.cta && <div className="dive-cta"><a href="#contact" className="btn solid" tabIndex={tab}><span>Get in touch</span></a></div>}
     </div>
   );
 }
@@ -272,7 +286,7 @@ export default function Dive() {
       const li = items.current[active + 1];
       if (!li) return;
       const z = zone.current, w = li.offsetWidth, h = li.offsetHeight;
-      const inner = li.querySelector(".scene-body, .scene-dense, .scene-cap");
+      const inner = li.querySelector(".scene-about, .scene-index, .scene-timeline, .scene-cap");
       const iw = inner ? Math.min(w, inner.scrollWidth) : w;
       z.l = li.offsetLeft + (w - iw) / 2; z.r = z.l + iw; z.t = li.offsetTop; z.b = li.offsetTop + h;
     };
@@ -315,7 +329,9 @@ export default function Dive() {
             </div>
             {SCENES.map((c, i) => c.big && (
               <span key={i} className="scene-big" data-on={active === i} ref={(el) => { bigs.current[i] = el; }} style={{ "--z": `${cardZ(i)}px` }}>
-                <LiveText text={c.big} kind="giant" unit="whole" perFrame gate={() => seenOn(bigs.current[i], 0.04)} />
+                {c.big.includes(" ")
+                  ? c.big.split(" ").map((w, k) => <span key={k} className="big-line"><LiveText text={w} kind="giant" unit="whole" perFrame gate={() => seenOn(bigs.current[i], 0.04)} /></span>)
+                  : <LiveText text={c.big} kind="giant" unit="whole" perFrame gate={() => seenOn(bigs.current[i], 0.04)} />}
               </span>
             ))}
             {WORDS.map((w, k) => (
@@ -341,8 +357,9 @@ export default function Dive() {
             {SCENES.map((c, i) => (
               <li key={i} className={"scene scene--" + c.kind} data-on={active === i} data-section={c.section} id={reduce ? c.anchor : undefined} ref={(el) => { items.current[i + 1] = el; }}>
                 {c.kind === "head" && <HeadScene c={c} gate={ready(i)} />}
-                {c.kind === "body" && <BodyScene c={c} gate={ready(i)} />}
-                {c.kind === "dense" && <DenseScene c={c} gate={ready(i)} tab={tab(i)} />}
+                {c.kind === "about" && <AboutScene c={c} gate={ready(i)} />}
+                {c.kind === "projects" && <ProjectsScene c={c} gate={ready(i)} tab={tab(i)} />}
+                {c.kind === "timeline" && <TimelineScene c={c} gate={ready(i)} tab={tab(i)} />}
               </li>
             ))}
           </ol>

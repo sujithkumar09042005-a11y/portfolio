@@ -23,7 +23,7 @@ export function LiveText({ text, kind, unit = "words", gate, perFrame = false, o
     <span className={className} {...rest}>
       {parts.map((p, i) => {
         const u = <span key={i} className="lt-u" ref={(el) => { refs.current[i] = el; }}>{p}{unit === "words" && i < parts.length - 1 ? " " : ""}</span>;
-        return outer ? <span key={i} className={outer} style={{ "--i": i }}>{u}</span> : u;
+        return outer ? <span key={i} className={outer} style={{ "--i": i, "--n": parts.length }}>{u}</span> : u;
       })}
     </span>
   );
