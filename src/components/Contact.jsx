@@ -1,7 +1,7 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 import { EMAIL, SOCIALS } from "../data.js";
 import { useMagnetic, useReducedMotion } from "../hooks.js";
-import { Title } from "./Reveal.jsx";
+import { Title } from "./Bits.jsx";
 
 const Arrow = () => (
   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" /></svg>
@@ -35,7 +35,7 @@ function CopyEmail() {
     } catch { setFallback(true); }
   }
   return (
-    <button className={"copy" + (done ? " done" : "")} type="button" onClick={copy} aria-label="Copy email address">
+    <button data-cursor="copy" className={"copy" + (done ? " done" : "")} type="button" onClick={copy} aria-label="Copy email address">
       <span>{done ? "Copied" : fallback ? "Press Ctrl+C" : "Copy"}</span>
     </button>
   );
@@ -118,18 +118,18 @@ function ContactForm() {
 
 export default function Contact() {
   return (
-    <section className="section contact" id="contact">
-      <Title>Let's work together</Title>
+    <section className="contact sb section" id="contact" aria-labelledby="contact-h">
+      <Title id="contact-h">Let's work together</Title>
       <div className="contact-grid">
         <div className="contact-main">
           <p className="contact-lead">Have a project in mind, or just want to say hello? Write to me and I will reply within two working days.</p>
           <div className="mail-row">
-            <a className="big-mail" href={`mailto:${EMAIL}`}>{EMAIL}</a>
+            <a className="big-mail" href={`mailto:${EMAIL}`} data-cursor="mail">{EMAIL}</a>
             <CopyEmail />
           </div>
           <ul className="socials">
             {SOCIALS.map((s) => (
-              <li key={s.label}><a href={s.href} target="_blank" rel="noopener"><span>{s.label}</span><Arrow /></a></li>
+              <li key={s.label}><a href={s.href} target="_blank" rel="noopener" data-cursor="open"><span>{s.label}</span><Arrow /></a></li>
             ))}
           </ul>
           <svg className="badge" viewBox="0 0 200 200" aria-hidden="true">

@@ -1,91 +1,90 @@
-import { useEffect, useRef, useState } from "react";
+// Copyright (c) 2026 ReLU Technologies Private Limited. All rights reserved.
+import { useEffect, useRef } from "react";
 import { PROJECTS } from "../data.js";
-import { useCanHover, useReducedMotion } from "../hooks.js";
-import { Rule, Title } from "./Reveal.jsx";
+import { clamp, state, subscribe } from "../engine.js";
+import { useMedia, useReducedMotion } from "../hooks.js";
+import { Scramble } from "./Bits.jsx";
 
-/** Preview card that eases toward the cursor, tilts with horizontal speed and scales in and out. */
-function Peek({ project, pointer }) {
-  const el = useRef(null);
-  const state = useRef({ x: 0, y: 0, s: 0.6, tx: 0, ty: 0, ts: 0.6, first: true });
+const TONES = ["sc", "sa", "sb"];
 
-  useEffect(() => {
-    const s = state.current;
-    let raf;
-    const frame = () => {
-      const vx = s.tx - s.x;
-      s.x += vx * 0.16; s.y += (s.ty - s.y) * 0.16; s.s += (s.ts - s.s) * 0.16;
-      const tilt = Math.max(-12, Math.min(12, vx * 0.06));
-      if (el.current) el.current.style.transform = `translate3d(${s.x}px, ${s.y}px, 0) rotate(${tilt}deg) scale(${s.s})`;
-      raf = requestAnimationFrame(frame);
-    };
-    raf = requestAnimationFrame(frame);
-    return () => cancelAnimationFrame(raf);
-  }, []);
-
-  useEffect(() => {
-    const s = state.current;
-    if (project) {
-      s.tx = pointer.current.x + 28; s.ty = pointer.current.y - 100; s.ts = 1;
-      if (s.first || s.ts === 0.6) { s.x = s.tx; s.y = s.ty; }
-      s.first = false;
-    } else { s.ts = 0.6; s.first = true; }
-  }, [project, pointer]);
-
-  // follow the pointer while a project is active
-  useEffect(() => {
-    if (!project) return;
-    const s = state.current;
-    const move = (e) => { s.tx = e.clientX + 28; s.ty = e.clientY - 100; };
-    window.addEventListener("pointermove", move, { passive: true });
-    return () => window.removeEventListener("pointermove", move);
-  }, [project]);
-
+function Panel({ p, i, n }) {
   return (
-    <div className={"peek" + (project ? " show" : "")} ref={el} aria-hidden="true">
-      <div className={"peek-art " + (project?.art ?? "")} />
-      <span className="peek-label">{project?.title}</span>
-    </div>
+    <article className={"panel " + TONES[i % 3]} data-i={i}>
+      <p className="p-num mono">0{i + 1} / 0{n}</p>
+      <h3 className="p-title">
+        <a href={p.href} target="_blank" rel="noopener" data-cursor="open">
+          <span className="p-type">{p.title}</span>
+        </a>
+      </h3>
+      <div className="plate" aria-hidden="true">
+        <div className="plate-in"><span className="p-type p-copy">{p.title}</span></div>
+      </div>
+      <div className="p-card">
+        <p>{p.desc}</p>
+        <ul className="tags">{p.meta.map((m) => <li key={m}>{m}</li>)}</ul>
+        <a className="btn" href={p.href} target="_blank" rel="noopener" aria-label={`Open ${p.title} on GitHub`} data-cursor="open">
+          <Scramble text="Open project" />
+        </a>
+      </div>
+    </article>
   );
 }
 
 export default function Work() {
   const reduce = useReducedMotion();
-  const canHover = useCanHover();
-  const [active, setActive] = useState(null);
-  const pointer = useRef({ x: 0, y: 0 });
-  const peekEnabled = !reduce && canHover;
+  const wide = useMedia("(min-width: 900px)", true);
+  const pinned = wide && !reduce;
+  const sec = useRef(null);
+  const track = useRef(null);
+  const n = PROJECTS.length;
 
   useEffect(() => {
-    if (!active) return;
-    const off = () => setActive(null);
-    // scrolling away from the hovered row, or leaving the window, hides the preview
-    window.addEventListener("blur", off);
-    document.addEventListener("pointerleave", off);
-    return () => { window.removeEventListener("blur", off); document.removeEventListener("pointerleave", off); };
-  }, [active]);
+    if (!pinned) return;
+    const s = sec.current, t = track.current;
+    const panels = [...t.children];
+    const range = () => Math.max(1, s.offsetHeight - innerHeight);
+    return subscribe(() => {
+      const top = s.getBoundingClientRect().top;
+      if (top > innerHeight || top < -s.offsetHeight) return;
+      const p = clamp(-top / range(), 0, 1);
+      const travel = t.scrollWidth - innerWidth;
+      t.style.transform = `translate3d(${-p * travel}px,0,0)`;
+      s.style.setProperty("--p", p.toFixed(4));
+      panels.forEach((el, i) => {
+        // local position: 0 when the panel is centred, +-1 one screen away
+        const local = (i / (n - 1) - p) * (n - 1);
+        el.style.setProperty("--l", local.toFixed(3));
+        el.style.setProperty("--a", Math.min(1, Math.abs(local)).toFixed(3));
+      });
+    });
+  }, [pinned, n]);
+
+  // keyboard: focusing a link in the pinned gallery scrolls the page to bring its panel to centre
+  function onFocus(e) {
+    if (!pinned) return;
+    const panel = e.target.closest(".panel");
+    if (!panel) return;
+    const i = Number(panel.dataset.i);
+    const s = sec.current;
+    const y = window.scrollY + s.getBoundingClientRect().top + (i / (n - 1)) * (s.offsetHeight - innerHeight);
+    window.scrollTo({ top: y, behavior: "instant" });
+  }
 
   return (
-    <section className="section" id="work">
-      <Title>Selected work</Title>
-      <ul className="work">
-        {PROJECTS.map((p, i) => (
-          <Rule as="li" key={p.title} index={i}>
-            <a
-              className="row"
-              href={p.href}
-              target="_blank"
-              rel="noopener"
-              onPointerEnter={peekEnabled ? (e) => { pointer.current = { x: e.clientX, y: e.clientY }; setActive(p); } : undefined}
-              onPointerLeave={peekEnabled ? () => setActive(null) : undefined}
-            >
-              <span className="row-title">{p.title}</span>
-              <span className="row-desc">{p.desc}</span>
-              <span className="row-meta">{p.meta[0]}<br />{p.meta[1]}</span>
-            </a>
-          </Rule>
-        ))}
-      </ul>
-      {peekEnabled && <Peek project={active} pointer={pointer} />}
+    <section
+      className={"work " + (pinned ? "pinned" : "native") + (reduce ? " stack" : "")}
+      id="work" ref={sec} aria-labelledby="work-h"
+      style={pinned ? { height: `${n * 100}vh` } : undefined}
+      onFocus={onFocus}
+    >
+      <h2 id="work-h" className="sr">Selected work</h2>
+      <div className="pin">
+        <div className="track" ref={track} tabIndex={pinned ? undefined : 0} role={pinned ? undefined : "group"} aria-label={pinned ? undefined : "Projects, scroll sideways"}>
+          {PROJECTS.map((p, i) => <Panel key={p.title} p={p} i={i} n={n} />)}
+        </div>
+      </div>
     </section>
   );
 }
+
+export { state };

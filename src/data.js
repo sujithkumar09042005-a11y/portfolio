@@ -30,6 +30,7 @@ export const FACTS = [
   ["Based in", "India"],
   ["Focus", "Full-stack web development"],
   ["Education", "B.E. in ECE, CGPA 8.4 (expected 2026)"],
+  ["Certifications", "Udemy Full-Stack Bootcamp, Claude 101, Claude Cowork"],
   ["Tools", "Java, JavaScript, TypeScript, Spring Boot, React, MySQL, Git"],
 ];
 
@@ -65,24 +66,34 @@ export const PROJECTS = [
   },
 ];
 
+export const TAGLINE = "I build";
+export const ROLE = "Full-stack developer";
+export const TZ = "Asia/Kolkata";
+
+export const CERTS =
+  "The Complete Full-Stack Web Development Bootcamp on Udemy (62 hours), plus Claude 101 and Introduction to Claude Cowork from Anthropic's Claude Academy.";
+
 export const EXPERIENCE = [
   {
+    when: "Current",
+    name: "ReluSys",
+    title: "Software Trainee",
+    desc: "Currently working at ReluSys as a Software Trainee.",
+    tags: [],
+  },
+  {
     when: "6 months",
-    title: "Java Full-Stack Intern, TAP Academy",
+    name: "TAP Academy",
+    title: "Java Full-Stack Intern",
     desc: "Trained across frontend, backend and database work in Bangalore, built backend applications with Spring, Hibernate, J2EE, JSP and JDBC on MySQL, and delivered a real-time project.",
     tags: ["Spring Boot", "Hibernate", "MySQL"],
   },
   {
     when: "Expected 2026",
+    name: "College",
     title: "B.E. Electronics and Communication, Sri Ramakrishna Institute of Technology",
     desc: "Studying with a CGPA of 8.4, alongside solving data structures and algorithms problems on LeetCode and taking part in Smart India Hackathon 2024.",
     tags: ["DSA", "OOPS", "DBMS"],
-  },
-  {
-    when: "2026",
-    title: "Certifications",
-    desc: "The Complete Full-Stack Web Development Bootcamp on Udemy (62 hours), plus Claude 101 and Introduction to Claude Cowork from Anthropic's Claude Academy.",
-    tags: ["Full-stack", "Claude"],
   },
 ];
 

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 
-function useMedia(query, serverValue) {
+export function useMedia(query, serverValue) {
   const subscribe = useCallback((cb) => {
     const mq = window.matchMedia(query);
     mq.addEventListener("change", cb);
