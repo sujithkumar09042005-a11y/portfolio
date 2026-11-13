@@ -14,6 +14,10 @@ export const NAV = [
   { id: "contact", label: "Contact" },
 ];
 
+export const ROLE = "Full-stack developer";
+export const HERO_LINE = "I build Java and Spring Boot backends with React frontends, and interfaces that are fast, keyboard-accessible and easy to use.";
+export const SITE_DESC = "Portfolio of Sujith Kumar V, a full-stack developer building Java, Spring Boot and React applications.";
+
 export const PHRASES = [
   "Spring Boot REST APIs",
   "React and TypeScript interfaces",
@@ -65,25 +69,35 @@ export const PROJECTS = [
   },
 ];
 
+// Newest first. ReluSys is the current role; only the title is public so nothing else is claimed.
 export const EXPERIENCE = [
   {
+    when: "Current",
+    title: "Software Trainee",
+    org: "ReluSys",
+    desc: "",
+    tags: [],
+  },
+  {
     when: "6 months",
-    title: "Java Full-Stack Intern, TAP Academy",
+    title: "Java Full-Stack Intern",
+    org: "TAP Academy",
     desc: "Trained across frontend, backend and database work in Bangalore, built backend applications with Spring, Hibernate, J2EE, JSP and JDBC on MySQL, and delivered a real-time project.",
     tags: ["Spring Boot", "Hibernate", "MySQL"],
   },
   {
     when: "Expected 2026",
-    title: "B.E. Electronics and Communication, Sri Ramakrishna Institute of Technology",
+    title: "B.E. Electronics and Communication",
+    org: "Sri Ramakrishna Institute of Technology",
     desc: "Studying with a CGPA of 8.4, alongside solving data structures and algorithms problems on LeetCode and taking part in Smart India Hackathon 2024.",
     tags: ["DSA", "OOPS", "DBMS"],
   },
-  {
-    when: "2026",
-    title: "Certifications",
-    desc: "The Complete Full-Stack Web Development Bootcamp on Udemy (62 hours), plus Claude 101 and Introduction to Claude Cowork from Anthropic's Claude Academy.",
-    tags: ["Full-stack", "Claude"],
-  },
+];
+
+export const CERTIFICATIONS = [
+  "The Complete Full-Stack Web Development Bootcamp, Udemy (62 hours)",
+  "Claude 101, Anthropic's Claude Academy",
+  "Introduction to Claude Cowork, Anthropic's Claude Academy",
 ];
 
 export const SOCIALS = [

@@ -1,38 +1,35 @@
+// Copyright (c) 2026 ReLU Technologies Private Limited. All rights reserved.
 import { useEffect, useRef } from "react";
 import { MARQUEE } from "../data.js";
-import { useOnScreen, useReducedMotion } from "../hooks.js";
+import { live, onFrame } from "../live.js";
 
-/** Skills ticker that drifts on its own and speeds up, skews and flips with scroll velocity. */
-export default function Marquee() {
-  const reduce = useReducedMotion();
-  const [wrap, visible] = useOnScreen();
+/** Ticker that drifts on its own and speeds up (and reverses) with scroll velocity. Static when reduced. */
+export default function Marquee({ reduce }) {
   const track = useRef(null);
-
   useEffect(() => {
     if (reduce) return;
-    let x = 0, dir = -1, vel = 0, last = window.scrollY, raf;
-    const frame = () => {
-      const dy = window.scrollY - last;
-      last = window.scrollY;
-      vel += (dy - vel) * 0.1;
-      if (Math.abs(dy) > 1) dir = dy > 0 ? -1 : 1;
-      if (visible.current) {
-        x += dir * (0.6 + Math.min(Math.abs(vel), 40) * 0.5);
-        const half = track.current.scrollWidth / 2;
-        if (x <= -half) x += half;
-        if (x > 0) x -= half;
-        track.current.style.transform = `translateX(${x}px) skewX(${Math.max(-8, Math.min(8, -vel * 0.25))}deg)`;
-      }
-      raf = requestAnimationFrame(frame);
-    };
-    raf = requestAnimationFrame(frame);
-    return () => cancelAnimationFrame(raf);
-  }, [reduce, visible]);
+    const el = track.current;
+    let x = 0, boost = 0, vis = true;
+    const io = new IntersectionObserver(([e]) => { vis = e.isIntersecting; });
+    io.observe(el);
+    const off = onFrame((_, dt) => {
+      if (!vis) return;
+      boost += (live.scrollVel - boost) * (1 - Math.pow(0.002, dt));
+      const half = el.scrollWidth / 2;
+      x -= (60 + boost * 22) * dt;
+      x = ((x % half) - half) % half; // wrap seamlessly
+      el.style.transform = `translate3d(${x}px,0,0)`;
+    });
+    return () => { off(); io.disconnect(); };
+  }, [reduce]);
 
+  const row = (hidden) => MARQUEE.map((w) => (
+    <span className="mq-item" key={w + hidden} aria-hidden={hidden || undefined}>{w}<i /></span>
+  ));
   return (
-    <div className="marquee" ref={wrap} aria-hidden="true">
-      <div className="marquee-track" ref={track}>
-        {[0, 1].flatMap((copy) => MARQUEE.flatMap((w) => [<span key={`${copy}-${w}`}>{w}</span>, <i key={`${copy}-${w}-i`} />]))}
+    <div className={"marquee" + (reduce ? " static" : "")} role="group" aria-label="Skills: Full-stack, Spring Boot, React, TypeScript, MySQL">
+      <div className="mq-track" ref={track} aria-hidden="true">
+        {row("a")}{row("b")}{row("c")}{row("d")}
       </div>
     </div>
   );

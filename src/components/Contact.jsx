@@ -1,7 +1,8 @@
+// Copyright (c) 2026 ReLU Technologies Private Limited. All rights reserved.
 import { useActionState, useEffect, useRef, useState } from "react";
 import { EMAIL, SOCIALS } from "../data.js";
 import { useMagnetic, useReducedMotion } from "../hooks.js";
-import { Title } from "./Reveal.jsx";
+import { Title, useGlowToward } from "./Interactive.jsx";
 
 const Arrow = () => (
   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" /></svg>
@@ -67,6 +68,7 @@ function ContactForm() {
   const [touched, setTouched] = useState({});
   const errors = Object.fromEntries(Object.keys(RULES).map((k) => [k, touched[k] ? RULES[k](values[k]) : ""]));
   const formRef = useRef(null);
+  useGlowToward(formRef);
 
   // React 19 form action: validate, show a loading state, then hand off to the visitor's mail app
   const [state, submit, pending] = useActionState(async (_prev, formData) => {
@@ -118,7 +120,7 @@ function ContactForm() {
 
 export default function Contact() {
   return (
-    <section className="section contact" id="contact">
+    <section className="section contact" id="contact" data-hue="330" data-int="1.05">
       <Title>Let's work together</Title>
       <div className="contact-grid">
         <div className="contact-main">
@@ -132,11 +134,6 @@ export default function Contact() {
               <li key={s.label}><a href={s.href} target="_blank" rel="noopener"><span>{s.label}</span><Arrow /></a></li>
             ))}
           </ul>
-          <svg className="badge" viewBox="0 0 200 200" aria-hidden="true">
-            <defs><path id="circ" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0" /></defs>
-            <text><textPath href="#circ">open for projects * open for projects * open for projects * </textPath></text>
-            <circle cx="100" cy="100" r="6" />
-          </svg>
         </div>
         <ContactForm />
       </div>
