@@ -35,10 +35,17 @@ const streakSeed = Array.from({ length: STREAKS }, (_, k) => {
 // The readable copy flies with the scene: it arrives from the vanishing point at the speed of the world, slows to a
 // near-stop while you read it, then flies past you. Index 0 is the intro, 1..N are the chapters.
 // Tuned by simulation: no two texts visible together, no dead stretches, and the text stays with its giant word.
-const HOLD = 380, INTRO_HOLD = 700, SLOW = 0.14, OFFSET = 400;
+const HOLD = 380, INTRO_HOLD = 700, OFFSET = 400;
+const REST = 0.7;                       // the middle 70% of the hold is perfectly flat, so the text is pixel-sharp while you read it
 const centre = (c) => (c === 0 ? 0 : (FIRST + c - 1) * GAP - OFFSET);
 const hold = (c) => (c === 0 ? INTRO_HOLD : HOLD);
-const copyZ = (s, c) => { const h = hold(c), u = s - centre(c); return u < -h ? u + h - h * SLOW : u > h ? u - h + h * SLOW : u * SLOW; };
+const EDGE_Z = 53;                      // how far the text has drifted by the end of its hold (as before)
+const copyZ = (s, c) => {
+  const h = hold(c), u = s - centre(c), a = Math.abs(u), d = h * REST, sign = u < 0 ? -1 : 1;
+  if (a <= d) return 0;
+  if (a <= h) return sign * ((a - d) / (h - d)) * EDGE_Z;
+  return sign * (a - h + EDGE_Z);
+};
 const enter = (z) => clamp((z + 420) / 340, 0, 1);              // 0 far away, 1 once it has arrived
 const leave = (z) => 1 - smooth(40, 280, z);                    // 1 until it starts to pass, 0 once it is by
 const copyOpacity = (z) => leave(z) * clamp(enter(z) * 2.5, 0, 1);
@@ -155,7 +162,8 @@ export default function Dive() {
     items.current.forEach((el, c) => {
       if (!el) return;
       const z = copyZ(s, c);
-      el.style.transform = `translateZ(${z.toFixed(1)}px)`;   // the parent's perspective does the foreshortening
+      // while it rests the text has no transform at all, so the browser draws it as ordinary, pixel-aligned text
+      el.style.transform = z === 0 ? "none" : `translateZ(${z.toFixed(1)}px)`;   // otherwise the parent's perspective does the foreshortening
       el.style.opacity = copyOpacity(z).toFixed(3);
       el.style.setProperty("--e", enter(z).toFixed(3));
     });

@@ -255,14 +255,14 @@ main, .footer { position: relative; z-index: 1; }
 
 .dive-ui { position: absolute; inset: 0; z-index: 2; pointer-events: none; display: grid; align-content: end; padding: 0 var(--pad) 2rem; }
 .dive-copy { position: absolute; inset: 0; margin: 0; padding: 0; list-style: none; perspective: 1000px; perspective-origin: 50% 46%; }
-.dive-copy > li { position: absolute; left: 6vw; top: 50%; width: min(34rem, 88vw); margin-top: -8rem; opacity: 0; transform-origin: 0 50%; will-change: transform, opacity; pointer-events: none; isolation: isolate; }
+.dive-copy > li { position: absolute; left: 6vw; top: 50%; width: min(34rem, 88vw); margin-top: -8rem; opacity: 0; transform-origin: 0 50%; pointer-events: none; isolation: isolate; }
 .dive-copy > li[data-on="true"] { pointer-events: auto; }
 .dive-block { position: relative; }
-.dive-title { margin: 0 0 0.7rem; font-size: clamp(1.7rem, 3.8vw, 3rem); font-weight: 600; letter-spacing: -0.035em; line-height: 1.08; max-width: 17ch; }
+.dive-title { margin: 0 0 0.8rem; font-size: clamp(1.8rem, 3.8vw, 3rem); font-weight: 600; letter-spacing: -0.03em; line-height: 1.1; max-width: 16ch; text-wrap: balance; text-rendering: optimizeLegibility; }
 /* each title word rises into place as its chapter arrives: --e goes 0 to 1 with the flight */
 .tw { display: inline-block; transform: translateY(calc((1 - clamp(0, (var(--e, 1) * 1.6) - (var(--i) * 0.12), 1)) * 0.7em)); opacity: clamp(0, (var(--e, 1) * 1.6) - (var(--i) * 0.12), 1); }
 .dive-body { opacity: clamp(0, (var(--e, 1) - 0.55) * 3, 1); transform: translateY(calc((1 - clamp(0, (var(--e, 1) - 0.55) * 3, 1)) * 14px)); }
-.dive-body p { color: var(--muted); font-size: 1.1rem; max-width: 36ch; margin-bottom: 1.1rem; }
+.dive-body p { color: color-mix(in srgb, var(--text) 84%, var(--bg)); font-size: 1.15rem; line-height: 1.62; letter-spacing: 0.005em; max-width: 38ch; margin-bottom: 1.1rem; text-wrap: pretty; text-rendering: optimizeLegibility; }
 .dive-cta { display: flex; gap: 0.8rem; flex-wrap: wrap; }
 .dive-hud { position: relative; display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap; font-size: 0.92rem; font-variant-numeric: tabular-nums; pointer-events: auto; }
 .dive-track { position: relative; flex: 1 1 8rem; max-width: 22rem; height: 2px; background: var(--line); }
@@ -292,21 +292,18 @@ main, .footer { position: relative; z-index: 1; }
 
 /* ---------- the dive as type: every chapter is one giant outlined word with floating words at other depths ---------- */
 .dive-name { position: absolute; left: 50%; top: 46%; width: max-content; margin: 0; transform: translate(-50%, -50%); text-align: center; font-size: clamp(4rem, 17vw, 15rem); line-height: 0.86; letter-spacing: -0.055em; font-weight: 500; font-variation-settings: "wght" 500, "wdth" 100; z-index: 1; pointer-events: none; }
-.scene-big { position: absolute; left: 50%; top: 44%; width: max-content; max-width: none; font-size: clamp(5rem, 22vw, 20rem); font-weight: 700; letter-spacing: -0.06em; line-height: 0.9; color: color-mix(in srgb, var(--c1) 14%, transparent); -webkit-text-stroke: 2px color-mix(in srgb, var(--c1) 55%, transparent); transform: translate(-50%, -50%) translateZ(var(--z)) rotateZ(var(--rot, 0deg)); opacity: 0; white-space: nowrap; user-select: none; text-shadow: 0 0 40px color-mix(in srgb, var(--c1) 30%, transparent); transition: color 0.5s var(--ease), -webkit-text-stroke-color 0.5s var(--ease), text-shadow 0.5s var(--ease); }
-.scene-big[data-on="true"] { background: linear-gradient(100deg, var(--c1), var(--c2)); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-stroke: 1.5px color-mix(in srgb, var(--c2) 80%, white 20%); text-shadow: none; filter: drop-shadow(0 0 28px color-mix(in srgb, var(--c1) 55%, transparent)); }
-.scene-big::before, .scene-big::after { content: attr(data-t); position: absolute; left: 0; top: 0; color: transparent; background: none; -webkit-text-stroke: 1.5px color-mix(in srgb, var(--c2) 45%, transparent); pointer-events: none; }
-.scene-big::before { transform: translateZ(-90px) scale(1.02); opacity: 0.55; }
-.scene-big::after { transform: translateZ(-190px) scale(1.04); opacity: 0.28; }
-.scene-w { position: absolute; left: 50%; top: 50%; font-size: clamp(1.3rem, 3.4vw, 2.8rem); font-weight: 600; letter-spacing: -0.03em; white-space: nowrap; color: var(--muted); transform: translate(calc(-50% + var(--x) + var(--dx, 0px)), calc(-50% + var(--y) + var(--dy, 0px))) translateZ(var(--z)); opacity: 0; user-select: none; }
-.scene-w.is-accent { color: var(--pop); text-shadow: 0 0 18px color-mix(in srgb, var(--pop) 40%, transparent); }
-.dive-stack { color: var(--text) !important; font-size: 0.98rem !important; }
+.scene-big { position: absolute; left: 50%; top: 44%; width: max-content; max-width: none; font-size: clamp(5rem, 22vw, 20rem); font-weight: 700; letter-spacing: -0.03em; line-height: 0.9; color: color-mix(in srgb, var(--c1) 20%, transparent); transform: translate(-50%, -50%) translateZ(var(--z)) rotateZ(var(--rot, 0deg)); opacity: 0; white-space: nowrap; user-select: none; text-rendering: geometricPrecision; transition: color 0.5s var(--ease); }
+.scene-big[data-on="true"] { background: linear-gradient(100deg, color-mix(in srgb, var(--c1) 82%, transparent), color-mix(in srgb, var(--c2) 82%, transparent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.scene-w { position: absolute; left: 50%; top: 50%; font-size: clamp(1.3rem, 3.4vw, 2.8rem); font-weight: 600; letter-spacing: -0.03em; white-space: nowrap; color: var(--muted); transform: translate(calc(-50% + var(--x) + var(--dx, 0px)), calc(-50% + var(--y) + var(--dy, 0px))) translateZ(var(--z)); opacity: 0; user-select: none; text-rendering: geometricPrecision; }
+.scene-w.is-accent { color: var(--pop); }
+.dive-stack { color: var(--text) !important; font-size: 1rem !important; }
 .dive-link { display: inline-flex; align-items: center; min-height: 44px; margin-bottom: 0.8rem; color: var(--text); font-weight: 500; text-decoration: underline; text-decoration-color: var(--c1); text-underline-offset: 0.25em; transition: color 0.3s var(--ease); }
 .dive-link:hover { color: var(--c1); }
 /* readable copy over moving type: a soft backing keeps the contrast at or above 4.5:1 without drawing a box */
 .dive-copy > li::before { content: ""; position: absolute; inset: -2.2rem -2.6rem -1.6rem -2.2rem; z-index: -1; background: radial-gradient(ellipse at 38% 55%, color-mix(in srgb, var(--bg) 94%, transparent) 38%, transparent 78%); pointer-events: none; }
 .dive.is-static .dive-name { position: static; transform: none; text-align: left; width: auto; font-size: clamp(3.4rem, 14vw, 11rem); padding: 7rem var(--pad) 0; max-width: 1240px; margin: 0 auto; }
 .dive.is-static .dive-copy > li::before { content: ""; position: absolute; inset: -2.2rem -2.6rem -1.6rem -2.2rem; z-index: -1; background: radial-gradient(ellipse at 38% 55%, color-mix(in srgb, var(--bg) 94%, transparent) 38%, transparent 78%); pointer-events: none; }
-@media (max-width: 40rem) { .scene-w { font-size: 1.1rem; } .scene-big { -webkit-text-stroke-width: 1.5px; } }
+@media (max-width: 40rem) { .scene-w { font-size: 1.1rem; } }
 @media (prefers-reduced-motion: reduce) { .scene-big, .scene-w { transition: none; } }
 
 /* the current section is also underlined, so it is not signalled by colour alone */
@@ -331,7 +328,10 @@ main, .footer { position: relative; z-index: 1; }
 [data-theme="light"] .dive-light { opacity: calc(var(--lit) * 0.7); }
 [data-theme="light"] .dive-vignette { background: radial-gradient(ellipse 78% 74% at 50% 46%, transparent 55%, color-mix(in srgb, var(--bg) 70%, transparent) 100%); }
 [data-theme="light"] .dive-vignette::after { opacity: 0.05; mix-blend-mode: multiply; }
-[data-theme="light"] .scene-big { color: color-mix(in srgb, var(--c1) 12%, transparent); }
+[data-theme="light"] .scene-big { color: color-mix(in srgb, var(--c1) 16%, transparent); }
 .dive.is-static .dive-light, .dive.is-static .dive-streaks, .dive.is-static .dive-vignette { display: none; }
 @media (prefers-reduced-motion: reduce) { .dive-streaks { display: none; } .dive-light { opacity: 0.6; } }
-@media (max-width: 40rem) { .dive-streaks i:nth-child(n+14) { display: none; } .scene-big::before, .scene-big::after { display: none; } }
+@media (max-width: 40rem) { .dive-streaks i:nth-child(n+14) { display: none; } }
+/* text clarity in the dive: grayscale smoothing keeps light text on dark from looking heavy, and tabular figures stay steady */
+.dive-copy { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-kerning: normal; font-variant-ligatures: common-ligatures; }
+.dive-name { text-rendering: geometricPrecision; -webkit-font-smoothing: antialiased; }
