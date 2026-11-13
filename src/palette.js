@@ -59,3 +59,6 @@ export function worldColors(theme, hue, palette) {
     pop: css(s.pop, ch(s.pop, palette.pop), palette.pop),
   };
 }
+
+/** The colours of the chapter the camera is in now. The dive writes them; the page background reads them (no DOM writes, so no style recalculation). */
+export const chapterColors = { c1: "", c2: "", pop: "" };

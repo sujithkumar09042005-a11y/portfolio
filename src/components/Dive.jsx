@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { DIVE_CHAPTERS, DIVE_INTRO, DIVE_PALETTE, DIVE_PALETTES, HERO_LINES } from "../data.js";
-import { worldColors } from "../palette.js";
+import { chapterColors, worldColors } from "../palette.js";
 import { useReducedMotion, useScroll } from "../hooks.js";
 
 // World units are CSS pixels along z. The camera moves forward by `s`; an object at world z sits at z + s on screen.
@@ -133,6 +133,7 @@ export default function Dive() {
     stage.current.style.setProperty("--c1", w.c1);
     stage.current.style.setProperty("--c2", w.c2);
     stage.current.style.setProperty("--pop", w.pop);
+    chapterColors.c1 = w.c1; chapterColors.c2 = w.c2; chapterColors.pop = w.pop;
     // 1) speed streaks: they stretch and brighten with how fast you scroll, then fade away when you stop (see paintSpeed)
     c.lastT = performance.now();
     if (!c.loop) c.loop = requestAnimationFrame(speedLoop);
