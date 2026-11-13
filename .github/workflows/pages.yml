@@ -1,0 +1,76 @@
+name: Deploy all designs to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build every design into its own folder
+        run: |
+          set -euo pipefail
+          REPO="${GITHUB_REPOSITORY#*/}"
+          OUT="$PWD/_site"
+          mkdir -p "$OUT"
+          # slug|branch|title
+          cat > /tmp/designs.txt <<'LIST'
+          main|main|Main design
+          aurora|feature/live-aurora|Aurora (shader)
+          kinetic|feature/live-kinetic|Kinetic (type)
+          playground|feature/live-playground|Playground (physics)
+          3d|feature/live-3d|Journey (3D)
+          bento|feature/live-bento|Living Bento
+          LIST
+          {
+            echo '<!DOCTYPE html><html lang="en"><meta charset="utf-8">'
+            echo '<meta name="viewport" content="width=device-width,initial-scale=1">'
+            echo '<title>Portfolio designs</title>'
+            echo '<style>body{font:18px/1.6 system-ui;max-width:32rem;margin:3rem auto;padding:0 1rem}a{display:block;padding:.6rem 0;border-bottom:1px solid #8884}</style>'
+            echo '<h1>Portfolio designs</h1>'
+          } > "$OUT/index.html"
+          while IFS='|' read -r slug branch title; do
+            slug="$(echo "$slug" | xargs)"; branch="$(echo "$branch" | xargs)"; title="$(echo "$title" | xargs)"
+            [ -n "$slug" ] || continue
+            echo "::group::$slug ($branch)"
+            rm -rf /tmp/work && git worktree prune
+            git worktree add -f /tmp/work "origin/$branch" --detach
+            (cd /tmp/work && npm ci && npx vite build --base="/$REPO/$slug/" --outDir "$OUT/$slug" --emptyOutDir)
+            git worktree remove --force /tmp/work
+            echo "<a href=\"$slug/\">$title</a>" >> "$OUT/index.html"
+            echo "::endgroup::"
+          done < /tmp/designs.txt
+          touch "$OUT/.nojekyll"
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
