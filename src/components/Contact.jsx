@@ -1,7 +1,7 @@
+// Copyright (c) 2026 ReLU Technologies Private Limited. All rights reserved.
 import { useActionState, useEffect, useRef, useState } from "react";
 import { EMAIL, SOCIALS } from "../data.js";
-import { useMagnetic, useReducedMotion } from "../hooks.js";
-import { Title } from "./Reveal.jsx";
+import { useReducedMotion } from "../hooks.js";
 
 const Arrow = () => (
   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" /></svg>
@@ -62,7 +62,6 @@ function Field({ name, type = "text", textarea, error, value, onChange, onBlur, 
 
 function ContactForm() {
   const reduce = useReducedMotion();
-  const mag = useMagnetic();
   const [values, setValues] = useState({ name: "", email: "", message: "" });
   const [touched, setTouched] = useState({});
   const errors = Object.fromEntries(Object.keys(RULES).map((k) => [k, touched[k] ? RULES[k](values[k]) : ""]));
@@ -105,7 +104,7 @@ function ContactForm() {
       <Field name="name" autoComplete="name" {...bind("name")} />
       <Field name="email" type="email" autoComplete="email" {...bind("email")} />
       <Field name="message" textarea {...bind("message")} />
-      <button className={"btn solid send magnetic" + (pending ? " loading" : "") + (showReady ? " success" : "")} type="submit" disabled={pending} {...mag}>
+      <button className={"send" + (pending ? " loading" : "") + (showReady ? " success" : "")} type="submit" disabled={pending}>
         <span className="send-label">{pending ? "Sending" : showReady ? "Message ready" : "Send message"}</span>
       </button>
       <p className="form-note" role="status" aria-live="polite">
@@ -116,30 +115,20 @@ function ContactForm() {
   );
 }
 
-export default function Contact() {
+export default function ContactBody() {
   return (
-    <section className="section contact" id="contact">
-      <Title>Let's work together</Title>
-      <div className="contact-grid">
-        <div className="contact-main">
-          <p className="contact-lead">Have a project in mind, or just want to say hello? Write to me and I will reply within two working days.</p>
-          <div className="mail-row">
-            <a className="big-mail" href={`mailto:${EMAIL}`}>{EMAIL}</a>
-            <CopyEmail />
-          </div>
-          <ul className="socials">
-            {SOCIALS.map((s) => (
-              <li key={s.label}><a href={s.href} target="_blank" rel="noopener"><span>{s.label}</span><Arrow /></a></li>
-            ))}
-          </ul>
-          <svg className="badge" viewBox="0 0 200 200" aria-hidden="true">
-            <defs><path id="circ" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0" /></defs>
-            <text><textPath href="#circ">open for projects * open for projects * open for projects * </textPath></text>
-            <circle cx="100" cy="100" r="6" />
-          </svg>
-        </div>
-        <ContactForm />
+    <div className="contact-body">
+      <p className="contact-lead">Have a project in mind, or just want to say hello? Write to me and I will reply within two working days.</p>
+      <div className="mail-row">
+        <a className="big-mail" href={`mailto:${EMAIL}`}>{EMAIL}</a>
+        <CopyEmail />
       </div>
-    </section>
+      <ul className="socials">
+        {SOCIALS.map((s) => (
+          <li key={s.label}><a href={s.href} target="_blank" rel="noopener"><span>{s.label}</span><Arrow /></a></li>
+        ))}
+      </ul>
+      <ContactForm />
+    </div>
   );
 }

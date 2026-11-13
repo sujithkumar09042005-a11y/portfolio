@@ -10,7 +10,7 @@ export const RESUME = "https://drive.google.com/file/d/16Ga2nFcqlgoyxr6YUDyS0sDL
 export const NAV = [
   { id: "about", label: "About" },
   { id: "work", label: "Work" },
-  { id: "experience", label: "Experience" },
+  { id: "experience", label: "Career" },
   { id: "contact", label: "Contact" },
 ];
 
@@ -43,6 +43,7 @@ export const CHIPS = ["Java", "JavaScript", "TypeScript", "Spring Boot", "React"
 
 export const PROJECTS = [
   {
+    id: "feastflow",
     art: "a1",
     title: "FeastFlow",
     href: GITHUB,
@@ -50,6 +51,7 @@ export const PROJECTS = [
     meta: ["React, Spring Boot", "MySQL"],
   },
   {
+    id: "voyager",
     art: "a2",
     title: "Voyager",
     href: GITHUB,
@@ -57,6 +59,7 @@ export const PROJECTS = [
     meta: ["React, TypeScript", "Tailwind, Gemini"],
   },
   {
+    id: "splitwise",
     art: "a3",
     title: "SplitWise",
     href: GITHUB,
@@ -67,26 +70,60 @@ export const PROJECTS = [
 
 export const EXPERIENCE = [
   {
+    id: "relusys",
+    when: "Current",
+    title: "Software Trainee",
+    org: "ReluSys",
+    short: "Software Trainee, current",
+    desc: "Working as a Software Trainee at ReluSys.",
+    tags: ["Full-stack"],
+    current: true,
+  },
+  {
+    id: "tap",
     when: "6 months",
-    title: "Java Full-Stack Intern, TAP Academy",
+    title: "Java Full-Stack Intern",
+    org: "TAP Academy, Bangalore",
+    short: "Java full-stack internship, 6 months",
     desc: "Trained across frontend, backend and database work in Bangalore, built backend applications with Spring, Hibernate, J2EE, JSP and JDBC on MySQL, and delivered a real-time project.",
     tags: ["Spring Boot", "Hibernate", "MySQL"],
   },
   {
+    id: "be",
     when: "Expected 2026",
-    title: "B.E. Electronics and Communication, Sri Ramakrishna Institute of Technology",
+    title: "B.E. Electronics and Communication",
+    org: "Sri Ramakrishna Institute of Technology",
+    short: "B.E. ECE, CGPA 8.4, expected 2026",
     desc: "Studying with a CGPA of 8.4, alongside solving data structures and algorithms problems on LeetCode and taking part in Smart India Hackathon 2024.",
     tags: ["DSA", "OOPS", "DBMS"],
   },
-  {
-    when: "2026",
-    title: "Certifications",
-    desc: "The Complete Full-Stack Web Development Bootcamp on Udemy (62 hours), plus Claude 101 and Introduction to Claude Cowork from Anthropic's Claude Academy.",
-    tags: ["Full-stack", "Claude"],
-  },
 ];
 
+export const CERTIFICATIONS =
+  "The Complete Full-Stack Web Development Bootcamp on Udemy (62 hours), plus Claude 101 and Introduction to Claude Cowork from Anthropic's Claude Academy.";
+
+// Living status line in the identity tile: typed and erased in turn
+export const STATUS_FACTS = [
+  "Software Trainee at ReluSys",
+  "Java full-stack, trained at TAP Academy in Bangalore",
+  "B.E. in ECE, CGPA 8.4, expected 2026",
+  "Building Spring Boot APIs with React frontends",
+  "Using AI tools in my workflow, from Gemini to Claude",
+];
+
+export const STACK_NODES = [
+  { id: "client", name: "Client", tech: "React, TypeScript" },
+  { id: "api", name: "API", tech: "Java, Spring Boot" },
+  { id: "db", name: "Database", tech: "MySQL" },
+];
+
+export const TILE_COPY = {
+  stack: "Requests travel from a React and TypeScript client to a Spring Boot REST API, which reads and writes MySQL. The same shape sits behind FeastFlow.",
+  clock: "This clock follows your own time zone, and the tint tracks the real hour where you are.",
+};
+
 export const SOCIALS = [
+  { label: "Resume", href: RESUME },
   { label: "GitHub", href: GITHUB },
   { label: "LinkedIn", href: LINKEDIN },
 ];
