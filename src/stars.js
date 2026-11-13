@@ -43,12 +43,37 @@ export function makeStars(n, seed = 7) {
   return out;
 }
 
-/** Where a star is on screen for a given travel (in cycles). Returns null when it is off screen or invisible. */
-export function project(st, travel, W, H) {
+// The camera looks where you point: the vanishing point steers toward the pointer, the near layer most (parallax).
+export const STEER = [0.5, 1, 1.8], STEER_MAX = 0.14;
+export function steerOffset(px, py, W, H) {
+  return { x: (px / W - 0.5) * 2 * W * STEER_MAX, y: (py / H - 0.5) * 2 * H * STEER_MAX * 0.7 };
+}
+// Light bends around the pointer: stars near it are pushed outward and brightened.
+export const LENS_R = 190, LENS_PUSH = 46;
+export function lens(x, y, px, py) {
+  const dx = x - px, dy = y - py, d = Math.hypot(dx, dy);
+  if (d >= LENS_R || d < 0.001) return { x, y, f: 0 };
+  const f = Math.pow(1 - d / LENS_R, 2), k = (f * LENS_PUSH) / d;
+  return { x: x + dx * k, y: y + dy * k, f };
+}
+// A click sends a ring outward through the stars.
+export const RIPPLE_MS = 1400, RIPPLE_SPEED = 620, RIPPLE_AMP = 34, RIPPLE_BAND = 46;
+export function ripple(x, y, rp, now) {
+  const age = (now - rp.t0) / RIPPLE_MS;
+  if (age < 0 || age > 1) return { x, y, f: 0 };
+  const dx = x - rp.x, dy = y - rp.y, d = Math.hypot(dx, dy) || 0.001;
+  const u = (d - age * (RIPPLE_MS / 1000) * RIPPLE_SPEED) / RIPPLE_BAND, band = Math.exp(-u * u);
+  const amp = RIPPLE_AMP * Math.pow(1 - age, 1.5) * band;
+  return { x: x + (dx / d) * amp, y: y + (dy / d) * amp, f: band * (1 - age) };
+}
+
+/** Where a star is on screen for a given travel (in cycles). Returns null when it is off screen or invisible.
+ *  ox, oy move the vanishing point (px). */
+export function project(st, travel, W, H, ox = 0, oy = 0) {
   const L = LAYERS[st.layer];
   let t = (st.p + travel * L.speed) % 1; if (t < 0) t += 1;
   const R = Math.hypot(W / 2, H / 2) * 1.05, rho = st.r * Math.pow(t, 1.7) * R;
-  const x = W / 2 + Math.cos(st.a) * rho, y = H * VANISH_Y + Math.sin(st.a) * rho;
+  const x = W / 2 + ox + Math.cos(st.a) * rho, y = H * VANISH_Y + oy + Math.sin(st.a) * rho;
   if (x < -6 || x > W + 6 || y < -6 || y > H + 6) return null;
   const fade = smooth(0, 0.1, t) * (1 - smooth(0.9, 1, t));
   if (fade <= 0.01) return null;

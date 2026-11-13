@@ -249,8 +249,6 @@ main, .footer { position: relative; z-index: 1; }
 .dive-spin { position: absolute; inset: 0; transform-style: preserve-3d; transform-origin: 50% 46%; }
 .dive-ring { position: absolute; left: 50%; top: 46%; width: min(120vmin, 1100px); aspect-ratio: 16 / 10; margin: calc(min(120vmin, 1100px) * -0.3125) 0 0 calc(min(120vmin, 1100px) * -0.5); border: 2px solid var(--c1); border-radius: 22px; opacity: 0; transform: translateZ(var(--z)) rotate(var(--r)); pointer-events: none; box-shadow: 0 0 22px color-mix(in srgb, var(--c1) 55%, transparent), inset 0 0 26px color-mix(in srgb, var(--c2) 38%, transparent); }
 .dive-ring.is-accent { border-color: var(--c2); box-shadow: 0 0 30px color-mix(in srgb, var(--c2) 65%, transparent), inset 0 0 30px color-mix(in srgb, var(--c1) 40%, transparent); }
-.dive-name span { display: block; }
-.dive-name span:nth-child(2) { color: var(--accent); }
 
 .dive-ui { position: absolute; inset: 0; z-index: 2; pointer-events: none; display: grid; align-content: end; padding: 0 var(--pad) 2rem; }
 .dive-copy { position: absolute; inset: 0; margin: 0; padding: 0; list-style: none; perspective: 1000px; perspective-origin: 50% 46%; }
@@ -272,7 +270,6 @@ main, .footer { position: relative; z-index: 1; }
 
 /* the plain version: reduced motion shows every chapter as normal content */
 .dive.is-static .dive-view { display: none; }
-.dive.is-static .dive-name span { display: inline; }
 .dive.is-static .dive-ui { position: static; padding: 2rem var(--pad) 3rem; max-width: 1240px; margin: 0 auto; gap: 2rem; }
 .dive.is-static .dive-copy { position: static; perspective: none; display: grid; gap: 2.5rem; }
 .dive.is-static .dive-copy > li { position: static; width: auto; margin: 0; opacity: 1; transform: none; pointer-events: auto; }
@@ -334,3 +331,11 @@ main, .footer { position: relative; z-index: 1; }
 /* text clarity in the dive: grayscale smoothing keeps light text on dark from looking heavy, and tabular figures stay steady */
 .dive-copy { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-kerning: normal; font-variant-ligatures: common-ligatures; }
 .dive-name { text-rendering: geometricPrecision; -webkit-font-smoothing: antialiased; }
+
+/* the live name: two lines of letters, each its own element so it can spring */
+.live-name { display: block; }
+.ln-line { display: block; white-space: nowrap; }
+.ln-line:nth-child(2) { color: var(--c1, var(--accent)); }
+.ln-ch { display: inline-block; font-variation-settings: "wght" 500, "wdth" 100; transform-origin: 50% 60%; }
+.ln-ch.is-moving { will-change: transform; }
+.dive.is-static .ln-line { display: inline; }

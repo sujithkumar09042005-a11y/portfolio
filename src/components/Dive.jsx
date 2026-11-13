@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { DIVE_CHAPTERS, DIVE_INTRO, DIVE_PALETTE, DIVE_PALETTES, HERO_LINES } from "../data.js";
 import { chapterColors, worldColors } from "../palette.js";
+import LiveName from "./LiveName.jsx";
+import { startPointer } from "../pointer.js";
 import { useReducedMotion, useScroll } from "../hooks.js";
 
 // World units are CSS pixels along z. The camera moves forward by `s`; an object at world z sits at z + s on screen.
@@ -88,6 +90,7 @@ export default function Dive() {
   const streaks = useRef([]);
   const st = useRef({ s: 0, px: 0, py: 0, tx: 0, ty: 0, v: 0, lastS: 0, phase: 0, lastT: 0, loop: 0 });
   const [active, setActive] = useState(-1);
+  useEffect(() => { startPointer(); }, []);
 
   const write = () => {
     const { s, px, py } = st.current;
@@ -232,7 +235,7 @@ export default function Dive() {
           </div>
         </div>
         <h1 className="dive-name" ref={name}>
-          {HERO_LINES.map((l, i) => <span key={l}>{l}{i < HERO_LINES.length - 1 ? " " : ""}</span>)}
+          <LiveName lines={HERO_LINES} />
         </h1>
 
         <div className="dive-vignette" aria-hidden="true" />
