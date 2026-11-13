@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { DIVE_CHAPTERS, DIVE_INTRO, DIVE_PALETTE, DIVE_PALETTES, HERO_LINES } from "../data.js";
 import { chapterColors, worldColors } from "../palette.js";
 import LiveName from "./LiveName.jsx";
+import { LiveText } from "./Live.jsx";
 import { startPointer } from "../pointer.js";
 import { useReducedMotion, useScroll } from "../hooks.js";
 
@@ -52,6 +53,9 @@ const enter = (z) => clamp((z + 420) / 340, 0, 1);              // 0 far away, 1
 const leave = (z) => 1 - smooth(40, 280, z);                    // 1 until it starts to pass, 0 once it is by
 const copyOpacity = (z) => leave(z) * clamp(enter(z) * 2.5, 0, 1);
 
+// Text reacts to the pointer only while it is actually visible: the scene's script writes its opacity, and this reads it.
+const seenOn = (el, min) => !!el && parseFloat(el.style.opacity || "0") > min;
+
 function activeAt(s) {
   let best = -1, m = 0;
   for (let c = 0; c <= N; c++) { const o = copyOpacity(copyZ(s, c)); if (o > m) { m = o; best = c; } }
@@ -63,11 +67,10 @@ const anchorFraction = (i) => centre(i + 1) / D;
 // The floating words around each chapter's big word, flattened with their world depth.
 const WORDS = DIVE_CHAPTERS.flatMap((c, i) => (c.words || []).map(([t, x, y, off, acc]) => ({ i, t, x, y, z: cardZ(i) + off, acc: !!acc })));
 
-/** A short title split into words so each can rise in turn as the chapter arrives. Screen readers still read it as a sentence. */
-function Words({ text }) {
-  return text.split(" ").map((w, i, all) => (
-    <span key={i}><span className="tw" style={{ "--i": i }}>{w}</span>{i < all.length - 1 ? " " : ""}</span>
-  ));
+/** A short title split into words so each can rise in turn as the chapter arrives, and then react to the pointer. Screen readers
+ *  still read it as a sentence. */
+function Words({ text, gate }) {
+  return <LiveText text={text} kind="title" unit="words" gate={gate} perFrame outer="tw" />;
 }
 
 /**
@@ -226,11 +229,15 @@ export default function Dive() {
               ))}
             </div>
             {DIVE_CHAPTERS.map((c, i) => (
-              <span key={c.label} className="scene-big" data-t={c.big} data-on={active === i} ref={(el) => { bigs.current[i] = el; }} style={{ "--z": `${cardZ(i)}px` }}>{c.big}</span>
+              <span key={c.label} className="scene-big" data-on={active === i} ref={(el) => { bigs.current[i] = el; }} style={{ "--z": `${cardZ(i)}px` }}>
+                <LiveText text={c.big} kind="giant" unit="whole" perFrame gate={() => seenOn(bigs.current[i], 0.04)} />
+              </span>
             ))}
             {WORDS.map((w, k) => (
               <span key={k} className={"scene-w" + (w.acc ? " is-accent" : "")} ref={(el) => { words.current[k] = el; }}
-                style={{ "--x": `${w.x}vw`, "--y": `${w.y}vh`, "--z": `${w.z}px` }}>{w.t}</span>
+                style={{ "--x": `${w.x}vw`, "--y": `${w.y}vh`, "--z": `${w.z}px` }}>
+                <LiveText text={w.t} kind="float" unit="whole" perFrame gate={() => seenOn(words.current[k], 0.05)} />
+              </span>
             ))}
           </div>
         </div>
@@ -243,16 +250,16 @@ export default function Dive() {
           <ol className="dive-copy">
             <li data-on={active === -1} ref={(el) => { items.current[0] = el; }}>
               <div className="dive-block">
-                <p className="dive-title"><Words text={DIVE_INTRO} /></p>
+                <p className="dive-title"><Words text={DIVE_INTRO} gate={() => seenOn(items.current[0], 0.25)} /></p>
               </div>
             </li>
             {DIVE_CHAPTERS.map((c, i) => (
               <li key={c.label} data-on={active === i} id={reduce ? c.anchor : undefined} ref={(el) => { items.current[i + 1] = el; }}>
                 <div className="dive-block">
-                  <h2 className="dive-title"><Words text={c.title} /></h2>
+                  <h2 className="dive-title"><Words text={c.title} gate={() => seenOn(items.current[i + 1], 0.25)} /></h2>
                   <div className="dive-body">
-                    <p>{c.text}</p>
-                    {c.stack && <p className="dive-stack">{c.stack}</p>}
+                    <p><LiveText text={c.text} kind="body" unit="words" perFrame gate={() => seenOn(items.current[i + 1], 0.25)} /></p>
+                    {c.stack && <p className="dive-stack"><LiveText text={c.stack} kind="body" unit="words" perFrame gate={() => seenOn(items.current[i + 1], 0.25)} /></p>}
                     {c.href && <a className="dive-link" href={c.href} target="_blank" rel="noopener" tabIndex={tab(i)}>{c.link}<span className="visually-hidden"> (opens in a new tab)</span></a>}
                     {c.cta && (
                       <div className="dive-cta">

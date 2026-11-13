@@ -289,7 +289,8 @@ main, .footer { position: relative; z-index: 1; }
 /* ---------- the dive as type: every chapter is one giant outlined word with floating words at other depths ---------- */
 .dive-name { position: absolute; left: 50%; top: 46%; width: max-content; margin: 0; transform: translate(-50%, -50%); text-align: center; font-size: clamp(4rem, 17vw, 15rem); line-height: 0.86; letter-spacing: -0.055em; font-weight: 500; font-variation-settings: "wght" 500, "wdth" 100; z-index: 1; pointer-events: none; }
 .scene-big { position: absolute; left: 50%; top: 44%; width: max-content; max-width: none; font-size: clamp(5rem, 22vw, 20rem); font-weight: 700; letter-spacing: -0.03em; line-height: 0.9; color: color-mix(in srgb, var(--c1) 20%, transparent); transform: translate(-50%, -50%) translateZ(var(--z)) rotateZ(var(--rot, 0deg)); opacity: 0; white-space: nowrap; user-select: none; text-rendering: geometricPrecision; transition: color 0.5s var(--ease); }
-.scene-big[data-on="true"] { background: linear-gradient(100deg, color-mix(in srgb, var(--c1) 82%, transparent), color-mix(in srgb, var(--c2) 82%, transparent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.scene-big .lt-u { color: inherit; }
+.scene-big[data-on="true"] .lt-u { background: linear-gradient(100deg, color-mix(in srgb, var(--c1) 82%, transparent), color-mix(in srgb, var(--c2) 82%, transparent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .scene-w { position: absolute; left: 50%; top: 50%; font-size: clamp(1.3rem, 3.4vw, 2.8rem); font-weight: 600; letter-spacing: -0.03em; white-space: nowrap; color: var(--muted); transform: translate(calc(-50% + var(--x) + var(--dx, 0px)), calc(-50% + var(--y) + var(--dy, 0px))) translateZ(var(--z)); opacity: 0; user-select: none; text-rendering: geometricPrecision; }
 .scene-w.is-accent { color: var(--pop); }
 .dive-stack { color: var(--text) !important; font-size: 1rem !important; }
@@ -339,3 +340,10 @@ main, .footer { position: relative; z-index: 1; }
 .ln-ch { display: inline-block; font-variation-settings: "wght" 500, "wdth" 100; transform-origin: 50% 60%; }
 .ln-ch.is-moving { will-change: transform; }
 .dive.is-static .ln-line { display: inline; }
+
+/* live text: every unit is an inline-block; it is only given its own layer while it moves, so it is as sharp as normal text at rest */
+.lt-u { display: inline-block; transform-origin: 50% 55%; }
+.lt-u.is-moving { will-change: transform; }
+/* near the pointer a unit takes the chapter's colour (set by the engine as --lift, 0 to 1); both ends stay above 4.5:1 */
+.dive-copy .lt-u, .scene-w .lt-u { color: color-mix(in srgb, var(--c1, currentColor) calc(var(--lift, 0) * 70%), currentColor); }
+.dive-copy .dive-stack .lt-u { color: inherit; }
