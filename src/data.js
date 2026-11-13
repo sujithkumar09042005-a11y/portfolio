@@ -2,6 +2,10 @@
 
 export const NAME = "Sujith Kumar V";
 export const HERO_LINES = ["Sujith", "Kumar"];
+export const DISPLAY_NAME = "Sujith Kumar";
+export const ROLE = "Full-stack developer";
+export const HERO_LINE = "I build Java and Spring Boot backends with React frontends, and interfaces that are fast and keyboard-accessible.";
+export const TIMEZONE = "Asia/Kolkata";
 export const EMAIL = "sujithkumar09042005@gmail.com";
 export const GITHUB = "https://github.com/sujithkumar09042005-a11y";
 export const LINKEDIN = "https://www.linkedin.com/in/sujithkumar9425";
@@ -9,6 +13,7 @@ export const RESUME = "https://drive.google.com/file/d/16Ga2nFcqlgoyxr6YUDyS0sDL
 
 export const NAV = [
   { id: "about", label: "About" },
+  { id: "stack", label: "Stack" },
   { id: "work", label: "Work" },
   { id: "experience", label: "Experience" },
   { id: "contact", label: "Contact" },
@@ -39,12 +44,21 @@ export const STATS = [
   { to: 3, label: "Certifications earned" },
 ];
 
+// Categories drive the colour of each chip in the stack pit. Every name appears elsewhere in this file.
+export const STACK_GROUPS = [
+  { id: "back", label: "Backend", items: ["Java", "Spring Boot", "Hibernate", "JDBC", "MySQL", "REST APIs"] },
+  { id: "front", label: "Frontend", items: ["JavaScript", "TypeScript", "React", "Vite", "Tailwind CSS", "Recharts"] },
+  { id: "tools", label: "Tools and AI", items: ["Git", "Gemini", "Claude"] },
+  { id: "core", label: "Fundamentals", items: ["DSA", "OOPS", "DBMS"] },
+];
+
 export const CHIPS = ["Java", "JavaScript", "TypeScript", "Spring Boot", "React", "MySQL", "Tailwind CSS", "Git"];
 
 export const PROJECTS = [
   {
     art: "a1",
     title: "FeastFlow",
+    tone: "back",
     href: GITHUB,
     desc: "A full-stack food delivery app with Spring Boot REST APIs, a MySQL database for orders and delivery records, a live rider-tracking simulator and dark mode.",
     meta: ["React, Spring Boot", "MySQL"],
@@ -52,6 +66,7 @@ export const PROJECTS = [
   {
     art: "a2",
     title: "Voyager",
+    tone: "front",
     href: GITHUB,
     desc: "An AI travel discovery platform with live GPS distances, a Gemini-powered trip planner, day-by-day itineraries and keyboard-accessible navigation.",
     meta: ["React, TypeScript", "Tailwind, Gemini"],
@@ -59,30 +74,29 @@ export const PROJECTS = [
   {
     art: "a3",
     title: "SplitWise",
+    tone: "tools",
     href: GITHUB,
     desc: "An offline-first bill-splitting app that simplifies group debts to the fewest settlements, with itemized receipts, charts and PDF export.",
     meta: ["React, Vite", "Tailwind, Recharts"],
   },
 ];
 
+// ReluSys: only the role and that it is current are known, so nothing else is shown for it.
 export const EXPERIENCE = [
+  { when: "Current", title: "Software Trainee, ReluSys", tone: "tools", current: true },
   {
     when: "6 months",
     title: "Java Full-Stack Intern, TAP Academy",
+    tone: "back",
     desc: "Trained across frontend, backend and database work in Bangalore, built backend applications with Spring, Hibernate, J2EE, JSP and JDBC on MySQL, and delivered a real-time project.",
     tags: ["Spring Boot", "Hibernate", "MySQL"],
   },
   {
     when: "Expected 2026",
     title: "B.E. Electronics and Communication, Sri Ramakrishna Institute of Technology",
+    tone: "front",
     desc: "Studying with a CGPA of 8.4, alongside solving data structures and algorithms problems on LeetCode and taking part in Smart India Hackathon 2024.",
     tags: ["DSA", "OOPS", "DBMS"],
-  },
-  {
-    when: "2026",
-    title: "Certifications",
-    desc: "The Complete Full-Stack Web Development Bootcamp on Udemy (62 hours), plus Claude 101 and Introduction to Claude Cowork from Anthropic's Claude Academy.",
-    tags: ["Full-stack", "Claude"],
   },
 ];
 

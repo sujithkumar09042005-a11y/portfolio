@@ -1,56 +1,21 @@
-import { useRef, useState } from "react";
-import { EXPERIENCE, RESUME } from "../data.js";
-import { useMagnetic, useScroll } from "../hooks.js";
-import { Title } from "./Reveal.jsx";
-
-function Card({ job }) {
-  const ref = useRef(null);
-  return (
-    <div
-      className="card"
-      ref={ref}
-      onPointerMove={(e) => {
-        const r = ref.current.getBoundingClientRect();
-        ref.current.style.setProperty("--mx", `${e.clientX - r.left}px`);
-        ref.current.style.setProperty("--my", `${e.clientY - r.top}px`);
-      }}
-    >
-      <h3>{job.title}</h3>
-      <p>{job.desc}</p>
-      <ul className="tags">{job.tags.map((t) => <li key={t}>{t}</li>)}</ul>
-    </div>
-  );
-}
+// Copyright (c) 2026 ReLU Technologies Private Limited. All rights reserved.
+import { EXPERIENCE } from "../data.js";
 
 export default function Experience() {
-  const mag = useMagnetic();
-  const timeline = useRef(null);
-  const fill = useRef(null);
-  const items = useRef([]);
-  const [on, setOn] = useState(() => new Set());
-
-  useScroll(() => {
-    const tr = timeline.current.getBoundingClientRect();
-    const p = (innerHeight * 0.6 - tr.top) / tr.height;
-    fill.current.style.height = `${Math.max(0, Math.min(1, p)) * 100}%`;
-    const next = new Set();
-    items.current.forEach((it, i) => { if (it && it.getBoundingClientRect().top < innerHeight * 0.62) next.add(i); });
-    setOn((prev) => (prev.size === next.size && [...next].every((i) => prev.has(i)) ? prev : next));
-  });
-
   return (
-    <section className="section" id="experience">
-      <Title>Experience</Title>
-      <div className="timeline" ref={timeline}>
-        <div className="line-fill" ref={fill} />
-        {EXPERIENCE.map((job, i) => (
-          <article key={job.title} className={"item" + (on.has(i) ? " on" : "")} ref={(el) => { items.current[i] = el; }}>
-            <p className="when">{job.when}</p>
-            <Card job={job} />
-          </article>
+    <div className="exp">
+      <h2 className="section-title">Where I have been</h2>
+      <ol className="timeline">
+        {EXPERIENCE.map((e) => (
+          <li key={e.title} className={"tl-item" + (e.current ? " current" : "")} data-tone={e.tone}>
+            <span className="tl-dot" aria-hidden="true" />
+            <p className="tl-when">{e.current && <span className="live-dot" aria-hidden="true" />}{e.when}</p>
+            <h3>{e.title}</h3>
+            {e.desc && <p>{e.desc}</p>}
+            {e.tags && <ul className="tags">{e.tags.map((t) => <li key={t}>{t}</li>)}</ul>}
+          </li>
         ))}
-      </div>
-      <a href={RESUME} className="btn line magnetic" target="_blank" rel="noopener" {...mag}><span>View resume</span></a>
-    </section>
+      </ol>
+    </div>
   );
 }

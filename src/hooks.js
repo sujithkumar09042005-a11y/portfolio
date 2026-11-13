@@ -98,3 +98,22 @@ export function useTheme() {
   }, [apply, reduce]);
   return [theme, toggle];
 }
+
+/** Pointer tilt for cards (3D lean towards the cursor). Returns handlers to spread; empty when motion is off. */
+export function useTilt(max = 7) {
+  const reduce = useReducedMotion();
+  const canHover = useCanHover();
+  if (reduce || !canHover) return {};
+  return {
+    onPointerMove(e) {
+      const el = e.currentTarget, r = el.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width - 0.5, py = (e.clientY - r.top) / r.height - 0.5;
+      el.style.setProperty("--rx", (-py * max).toFixed(2) + "deg");
+      el.style.setProperty("--ry", (px * max).toFixed(2) + "deg");
+    },
+    onPointerLeave(e) {
+      e.currentTarget.style.setProperty("--rx", "0deg");
+      e.currentTarget.style.setProperty("--ry", "0deg");
+    },
+  };
+}

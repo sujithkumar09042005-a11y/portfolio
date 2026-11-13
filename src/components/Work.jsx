@@ -1,91 +1,72 @@
-import { useEffect, useRef, useState } from "react";
+// Copyright (c) 2026 ReLU Technologies Private Limited. All rights reserved.
+import { useRef } from "react";
 import { PROJECTS } from "../data.js";
-import { useCanHover, useReducedMotion } from "../hooks.js";
-import { Rule, Title } from "./Reveal.jsx";
+import { useReducedMotion, useTilt } from "../hooks.js";
+import { useArena } from "../physics/useArena.js";
 
-/** Preview card that eases toward the cursor, tilts with horizontal speed and scales in and out. */
-function Peek({ project, pointer }) {
-  const el = useRef(null);
-  const state = useRef({ x: 0, y: 0, s: 0.6, tx: 0, ty: 0, ts: 0.6, first: true });
+const ANGLES = [-2.2, 1.6, -1.2];
 
-  useEffect(() => {
-    const s = state.current;
-    let raf;
-    const frame = () => {
-      const vx = s.tx - s.x;
-      s.x += vx * 0.16; s.y += (s.ty - s.y) * 0.16; s.s += (s.ts - s.s) * 0.16;
-      const tilt = Math.max(-12, Math.min(12, vx * 0.06));
-      if (el.current) el.current.style.transform = `translate3d(${s.x}px, ${s.y}px, 0) rotate(${tilt}deg) scale(${s.s})`;
-      raf = requestAnimationFrame(frame);
-    };
-    raf = requestAnimationFrame(frame);
-    return () => cancelAnimationFrame(raf);
-  }, []);
-
-  useEffect(() => {
-    const s = state.current;
-    if (project) {
-      s.tx = pointer.current.x + 28; s.ty = pointer.current.y - 100; s.ts = 1;
-      if (s.first || s.ts === 0.6) { s.x = s.tx; s.y = s.ty; }
-      s.first = false;
-    } else { s.ts = 0.6; s.first = true; }
-  }, [project, pointer]);
-
-  // follow the pointer while a project is active
-  useEffect(() => {
-    if (!project) return;
-    const s = state.current;
-    const move = (e) => { s.tx = e.clientX + 28; s.ty = e.clientY - 100; };
-    window.addEventListener("pointermove", move, { passive: true });
-    return () => window.removeEventListener("pointermove", move);
-  }, [project]);
-
+function Note({ p, i, live, tilt }) {
   return (
-    <div className={"peek" + (project ? " show" : "")} ref={el} aria-hidden="true">
-      <div className={"peek-art " + (project?.art ?? "")} />
-      <span className="peek-label">{project?.title}</span>
-    </div>
+    <li className="note-slot">
+      <a
+        className="note" href={p.href} target="_blank" rel="noopener" data-body data-gripped data-tone={p.tone}
+        style={{ "--a": ANGLES[i % ANGLES.length] + "deg" }} {...(live ? {} : tilt)}
+      >
+        <span className="grip" aria-hidden="true"><i /></span>
+        <span className="note-no" aria-hidden="true">0{i + 1}</span>
+        <h3>{p.title}</h3>
+        <p>{p.desc}</p>
+        <span className="note-meta">{p.meta.map((m) => <span key={m}>{m}</span>)}</span>
+        <span className="note-open">Open on GitHub <span aria-hidden="true">-&gt;</span></span>
+      </a>
+    </li>
   );
 }
 
 export default function Work() {
   const reduce = useReducedMotion();
-  const canHover = useCanHover();
-  const [active, setActive] = useState(null);
-  const pointer = useRef({ x: 0, y: 0 });
-  const peekEnabled = !reduce && canHover;
+  const board = useRef(null);
+  const tilt = useTilt(6);
 
-  useEffect(() => {
-    if (!active) return;
-    const off = () => setActive(null);
-    // scrolling away from the hovered row, or leaving the window, hides the preview
-    window.addEventListener("blur", off);
-    document.addEventListener("pointerleave", off);
-    return () => { window.removeEventListener("blur", off); document.removeEventListener("pointerleave", off); };
-  }, [active]);
+  const [status] = useArena(board, (root) => {
+    const rr = root.getBoundingClientRect();
+    const notes = [...root.querySelectorAll("[data-body]")];
+    const items = notes.map((el, i) => {
+      const r = el.getBoundingClientRect();
+      const ang = (ANGLES[i % ANGLES.length] * Math.PI) / 180;
+      const home = { x: r.left - rr.left + r.width / 2, y: r.top - rr.top + r.height / 2, angle: ang };
+      return { el, x: home.x, y: home.y, w: r.width, h: r.height, angle: ang, radius: 6, home, body: { frictionAir: 0.035, density: 0.003, restitution: 0.5 } };
+    });
+    return {
+      items,
+      opts: { gravityY: 0, ceiling: true, dragStiffness: 0.16 },
+      after(arena) {
+        const { Constraint, Vector } = arena.Matter;
+        // two springs per note, like loose pins at its top corners: flick it and it swings back
+        arena.entries.forEach((en) => {
+          [-1, 1].forEach((s) => {
+            const local = { x: s * en.w * 0.36, y: -en.h / 2 + 22 };
+            const world = Vector.add(en.body.position, Vector.rotate(local, en.body.angle));
+            arena.Matter.Composite.add(arena.world, Constraint.create({
+              pointA: world, bodyB: en.body, pointB: local, length: 0, stiffness: 0.018, damping: 0.06,
+            }));
+          });
+        });
+      },
+    };
+  }, { enabled: !reduce, whenVisible: true });
 
+  const live = status === "live";
   return (
-    <section className="section" id="work">
-      <Title>Selected work</Title>
-      <ul className="work">
-        {PROJECTS.map((p, i) => (
-          <Rule as="li" key={p.title} index={i}>
-            <a
-              className="row"
-              href={p.href}
-              target="_blank"
-              rel="noopener"
-              onPointerEnter={peekEnabled ? (e) => { pointer.current = { x: e.clientX, y: e.clientY }; setActive(p); } : undefined}
-              onPointerLeave={peekEnabled ? () => setActive(null) : undefined}
-            >
-              <span className="row-title">{p.title}</span>
-              <span className="row-desc">{p.desc}</span>
-              <span className="row-meta">{p.meta[0]}<br />{p.meta[1]}</span>
-            </a>
-          </Rule>
-        ))}
-      </ul>
-      {peekEnabled && <Peek project={active} pointer={pointer} />}
-    </section>
+    <div className="work">
+      <h2 className="section-title">Things I have built</h2>
+      <p className="lede">{live ? "Pinned loosely: flick a note, it swings back. Click one to open the code." : "Three full-stack projects. Open one to see the code."}</p>
+      <div className="board">
+        <ul className="notes" ref={board}>
+          {PROJECTS.map((p, i) => <Note key={p.title} p={p} i={i} live={live} tilt={tilt} />)}
+        </ul>
+      </div>
+    </div>
   );
 }

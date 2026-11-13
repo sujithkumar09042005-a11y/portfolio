@@ -1,7 +1,7 @@
+// Copyright (c) 2026 ReLU Technologies Private Limited. All rights reserved.
 import { useActionState, useEffect, useRef, useState } from "react";
 import { EMAIL, SOCIALS } from "../data.js";
 import { useMagnetic, useReducedMotion } from "../hooks.js";
-import { Title } from "./Reveal.jsx";
 
 const Arrow = () => (
   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" /></svg>
@@ -118,8 +118,8 @@ function ContactForm() {
 
 export default function Contact() {
   return (
-    <section className="section contact" id="contact">
-      <Title>Let's work together</Title>
+    <div className="contact">
+      <h2 className="section-title">Let's work together</h2>
       <div className="contact-grid">
         <div className="contact-main">
           <p className="contact-lead">Have a project in mind, or just want to say hello? Write to me and I will reply within two working days.</p>
@@ -140,6 +140,6 @@ export default function Contact() {
         </div>
         <ContactForm />
       </div>
-    </section>
+    </div>
   );
 }
