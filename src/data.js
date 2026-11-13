@@ -92,3 +92,12 @@ export const SOCIALS = [
 ];
 
 export const FOOTER_SITEMAP = NAV;
+
+// The intro dive: one request travelling forward through the stack, one chapter per layer.
+export const DIVE_INTRO = "Full-stack developer. Scroll to send a request.";
+export const DIVE_CHAPTERS = [
+  { layer: "React", title: "Every app starts as a request.", text: "A user taps a button and React sends it." },
+  { layer: "Spring Boot", title: "An API decides what happens next.", text: "Spring Boot checks the request and calls the service." },
+  { layer: "MySQL", title: "The data lives in a database.", text: "Hibernate asks MySQL for the rows." },
+  { layer: "Response", title: "I build every layer of it.", text: "The front end, the API and the database, all by one person.", cta: true },
+];

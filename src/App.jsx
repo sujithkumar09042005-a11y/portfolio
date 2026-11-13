@@ -3,7 +3,7 @@ import About from "./components/About.jsx";
 import Contact from "./components/Contact.jsx";
 import Experience from "./components/Experience.jsx";
 import Footer from "./components/Footer.jsx";
-import Hero from "./components/Hero.jsx";
+import Dive from "./components/Dive.jsx";
 import Marquee from "./components/Marquee.jsx";
 import Nav from "./components/Nav.jsx";
 import Work from "./components/Work.jsx";
@@ -19,7 +19,7 @@ export default function App() {
       {!reduce && <Suspense fallback={null}><FlowField /></Suspense>}
       <Nav />
       <main>
-        <Hero />
+        <Dive />
         <Marquee />
         <About />
         <Work />

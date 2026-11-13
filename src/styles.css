@@ -26,14 +26,14 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; }
-html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+html { scroll-behavior: smooth; scroll-padding-top: 5rem; overflow-x: clip; }
 body {
   font-family: var(--display);
   font-variation-settings: "wdth" 100;
   background: var(--bg);
   color: var(--text);
   line-height: 1.55;
-  overflow-x: hidden;
+  overflow-x: clip;
   transition: background 0.5s var(--ease), color 0.5s var(--ease);
 }
 ul { list-style: none; padding: 0; }
@@ -330,3 +330,57 @@ main, .footer { position: relative; z-index: 1; }
 /* Nav legibility: a soft fade behind the pill row once the page scrolls; no box, no border line */
 .nav::before { content: ""; position: absolute; inset: 0 0 -1.6rem 0; z-index: -1; pointer-events: none; opacity: 0; background: linear-gradient(color-mix(in srgb, var(--bg) 88%, transparent) 30%, transparent); backdrop-filter: blur(10px); -webkit-mask-image: linear-gradient(#000 45%, transparent); mask-image: linear-gradient(#000 45%, transparent); transition: opacity 0.5s var(--ease); }
 .nav.scrolled::before { opacity: 1; }
+
+/* ---------- The dive: a forward-scrolling CSS 3D tunnel. Visible by default; the 3D layer only runs when not .is-static ---------- */
+.dive { position: relative; height: 560vh; }
+.dive.is-static { height: auto; }
+.dive-stage { position: sticky; top: 0; height: 100svh; overflow: hidden; }
+.dive.is-static .dive-stage { position: static; height: auto; overflow: visible; }
+.dive-view { position: absolute; inset: 0; perspective: 1000px; perspective-origin: 50% 46%; }
+.dive-world { position: absolute; inset: 0; transform-style: preserve-3d; will-change: transform; }
+.dive-ring { position: absolute; left: 50%; top: 46%; width: min(120vmin, 1100px); aspect-ratio: 16 / 10; margin: calc(min(120vmin, 1100px) * -0.3125) 0 0 calc(min(120vmin, 1100px) * -0.5); border: 1px solid var(--line); border-radius: 22px; opacity: 0; transform: translateZ(var(--z)) rotate(var(--r)); pointer-events: none; }
+.dive-ring.is-accent { border-color: color-mix(in srgb, var(--accent) 55%, transparent); }
+.dive-name { position: absolute; left: 50%; top: 46%; width: max-content; margin: 0; transform: translate(-50%, -50%) translateZ(0); text-align: center; font-size: clamp(4rem, 17vw, 15rem); line-height: 0.86; letter-spacing: -0.055em; font-weight: 500; font-variation-settings: "wght" 500, "wdth" 100; }
+.dive-name span { display: block; }
+.dive-name span:nth-child(2) { color: var(--accent); }
+.dive-card { position: absolute; left: 50%; top: 46%; width: min(30rem, 78vw); margin: -9rem 0 0 calc(min(30rem, 78vw) / -2); transform: translateZ(var(--z)); opacity: 0; border: 1px solid var(--line); border-radius: 18px; background: color-mix(in srgb, var(--bg-2) 92%, transparent); box-shadow: 0 30px 80px -30px var(--accent); overflow: hidden; }
+.dc-head { padding: 0.8rem 1.2rem; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 0.9rem; font-weight: 500; }
+.dc-body { display: grid; gap: 0.9rem; padding: 1.2rem; font-size: 0.95rem; }
+.dc-body code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.95rem; color: var(--accent); }
+.dc-btn { justify-self: start; padding: 0.5rem 1.1rem; border-radius: 999px; background: var(--accent); color: var(--on-accent); font-weight: 500; }
+.dc-chain, .dc-list { display: grid; gap: 0.45rem; margin: 0; padding: 0; list-style: none; }
+.dc-chain li { padding: 0.55rem 0.8rem; border: 1px solid var(--line); border-radius: 10px; }
+.dc-list li { padding: 0.35rem 0; border-bottom: 1px solid var(--line); }
+.dc-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+.dc-table th { text-align: left; color: var(--muted); font-weight: 500; padding: 0.35rem 0.5rem 0.35rem 0; }
+.dc-table td { padding: 0.45rem 0.5rem 0.45rem 0; border-top: 1px solid var(--line); }
+.dc-foot { padding: 0.6rem 1.2rem; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.82rem; }
+
+.dive-ui { position: absolute; inset: 0; z-index: 2; pointer-events: none; display: grid; align-content: space-between; padding: 6.5rem var(--pad) 2rem; }
+.dive-copy { position: relative; margin: 0; padding: 0; list-style: none; align-self: end; max-width: 34rem; min-height: 11rem; }
+.dive-copy li { position: absolute; left: 0; right: 0; bottom: 0; opacity: 0; transform: translateY(14px); transition: opacity 0.5s var(--ease), transform 0.5s var(--ease); pointer-events: none; }
+.dive-copy li[data-on="true"] { opacity: 1; transform: none; pointer-events: auto; }
+.dive-title { margin: 0 0 0.6rem; font-size: clamp(1.6rem, 3.6vw, 2.8rem); font-weight: 600; letter-spacing: -0.035em; line-height: 1.08; max-width: 18ch; }
+.dive-copy p:not(.dive-title) { color: var(--muted); font-size: 1.1rem; max-width: 36ch; margin-bottom: 1.1rem; }
+.dive-cta { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+.dive-hud { display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap; font-size: 0.92rem; font-variant-numeric: tabular-nums; pointer-events: auto; }
+.dive-track { position: relative; flex: 1 1 8rem; max-width: 22rem; height: 2px; background: var(--line); }
+.dive-track span { position: absolute; inset: 0; background: var(--accent); transform-origin: left; transform: scaleX(0); }
+.dive-skip { margin-left: auto; padding: 0.5rem 0; color: var(--muted); text-decoration: underline; text-underline-offset: 0.2em; min-height: 44px; display: inline-flex; align-items: center; }
+.dive-skip:hover { color: var(--text); }
+.muted { color: var(--muted); }
+
+/* the plain version: reduced motion shows every chapter as normal content */
+.dive.is-static .dive-view { position: static; perspective: none; padding: 7rem var(--pad) 0; max-width: 1240px; margin: 0 auto; }
+.dive.is-static .dive-world { position: static; transform: none; will-change: auto; }
+.dive.is-static .dive-ring, .dive.is-static .dive-card { display: none; }
+.dive.is-static .dive-name { position: static; transform: none; text-align: left; width: auto; font-size: clamp(3.4rem, 14vw, 11rem); }
+.dive.is-static .dive-name span { display: inline; }
+.dive.is-static .dive-ui { position: static; padding: 2rem var(--pad) 3rem; max-width: 1240px; margin: 0 auto; gap: 2rem; }
+.dive.is-static .dive-copy { min-height: 0; max-width: none; display: grid; gap: 2.5rem; }
+.dive.is-static .dive-copy li { position: static; opacity: 1; transform: none; pointer-events: auto; transition: none; }
+.dive.is-static .dive-hud { display: none; }
+.dive.is-static .dive-copy li:first-child .dive-title { font-size: clamp(2.6rem, 8vw, 6rem); max-width: 14ch; }
+
+@media (max-width: 40rem) { .dive { height: 480vh; } .dive-card { width: min(22rem, 86vw); } .dive-ui { padding-top: 5.5rem; } }
+@media (prefers-reduced-motion: reduce) { .dive { height: auto; } .dive-stage { position: static; height: auto; overflow: visible; } }
