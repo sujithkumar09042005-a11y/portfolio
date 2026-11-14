@@ -34,7 +34,7 @@ export const FACTS = [
 ];
 
 export const STATS = [
-  { to: 3, label: "Full-stack projects built" },
+  { to: 4, label: "Projects built" },
   { to: 6, label: "Months of full-stack internship" },
   { to: 3, label: "Certifications earned" },
 ];
@@ -43,46 +43,76 @@ export const CHIPS = ["Java", "JavaScript", "TypeScript", "Spring Boot", "React"
 
 export const PROJECTS = [
   {
-    art: "a1",
+    id: "feastflow",
     title: "FeastFlow",
     href: GITHUB,
-    desc: "A full-stack food delivery app with Spring Boot REST APIs, a MySQL database for orders and delivery records, a live rider-tracking simulator and dark mode.",
-    meta: ["React, Spring Boot", "MySQL"],
+    live: null,
+    desc: "A full-stack food delivery app with Spring Boot REST APIs, a MySQL database for orders and delivery records, a live rider-tracking simulator and dark mode. It has a customer app and a merchant command center that follows live kitchen orders.",
+    meta: ["React", "Spring Boot", "MySQL"],
+    shots: [
+      { src: "FeastFlow_Preview", label: "Customer home" },
+      { src: "FeastFlow_Portal", label: "Customer and merchant apps" },
+    ],
   },
   {
-    art: "a2",
+    id: "voyager",
     title: "Voyager",
     href: GITHUB,
+    live: "https://voyager-cyan.vercel.app",
     desc: "An AI travel discovery platform with live GPS distances, a Gemini-powered trip planner, day-by-day itineraries and keyboard-accessible navigation.",
-    meta: ["React, TypeScript", "Tailwind, Gemini"],
+    meta: ["React", "TypeScript", "Tailwind", "Gemini"],
+    shots: [
+      { src: "Voyager_Preview", label: "Home" },
+      { src: "Voyager_FullPage", label: "Full page", full: true },
+    ],
   },
   {
-    art: "a3",
-    title: "SplitWise",
+    id: "fairshare",
+    title: "FairShare",
     href: GITHUB,
+    live: "https://fair-share-two-ivory.vercel.app/",
     desc: "An offline-first bill-splitting app that simplifies group debts to the fewest settlements, with itemized receipts, charts and PDF export.",
-    meta: ["React, Vite", "Tailwind, Recharts"],
+    meta: ["React", "Vite", "Tailwind", "Recharts"],
+    shots: [
+      { src: "FairShare_Preview", label: "Home" },
+      { src: "FairShare_FullPage", label: "Full page", full: true },
+    ],
+  },
+  {
+    id: "gamesite",
+    title: "GameSite",
+    href: GITHUB,
+    live: null,
+    desc: "A cyber-themed arcade hub in vanilla JavaScript with four games: Neural Sync, Combat Sim, Data Serpent and Cyber Stack, a falling-blocks game with next-piece preview, high score and keyboard controls.",
+    meta: ["Vanilla JavaScript"],
+    shots: [
+      { src: "GameSite_Preview", label: "Arcade hub" },
+      { src: "GameSite_Tetris", label: "Cyber Stack" },
+    ],
   },
 ];
 
 export const EXPERIENCE = [
   {
-    when: "6 months",
-    title: "Java Full-Stack Intern, TAP Academy",
-    desc: "Trained across frontend, backend and database work in Bangalore, built backend applications with Spring, Hibernate, J2EE, JSP and JDBC on MySQL, and delivered a real-time project.",
-    tags: ["Spring Boot", "Hibernate", "MySQL"],
-  },
-  {
     when: "Expected 2026",
-    title: "B.E. Electronics and Communication, Sri Ramakrishna Institute of Technology",
+    title: "B.E. Electronics and Communication",
+    org: "Sri Ramakrishna Institute of Technology",
     desc: "Studying with a CGPA of 8.4, alongside solving data structures and algorithms problems on LeetCode and taking part in Smart India Hackathon 2024.",
     tags: ["DSA", "OOPS", "DBMS"],
   },
   {
-    when: "2026",
-    title: "Certifications",
-    desc: "The Complete Full-Stack Web Development Bootcamp on Udemy (62 hours), plus Claude 101 and Introduction to Claude Cowork from Anthropic's Claude Academy.",
-    tags: ["Full-stack", "Claude"],
+    when: "6 months",
+    title: "Java Full-Stack Intern",
+    org: "TAP Academy, Bangalore",
+    desc: "Trained across frontend, backend and database work, built backend applications with Spring, Hibernate, J2EE, JSP and JDBC on MySQL, and delivered a real-time project.",
+    tags: ["Spring Boot", "Hibernate", "MySQL"],
+  },
+  {
+    when: "Current",
+    title: "Software Trainee",
+    org: "ReluSys",
+    desc: "Currently working here as a Software Trainee.",
+    tags: [],
   },
 ];
 
@@ -92,3 +122,15 @@ export const SOCIALS = [
 ];
 
 export const FOOTER_SITEMAP = NAV;
+
+export const CERTS =
+  "The Complete Full-Stack Web Development Bootcamp on Udemy (62 hours), plus Claude 101 and Introduction to Claude Cowork from Anthropic's Claude Academy.";
+
+export const STACK = [
+  { label: "Backend", items: ["Java", "Spring Boot", "Hibernate", "J2EE", "JDBC"] },
+  { label: "Frontend", items: ["JavaScript", "TypeScript", "React", "Tailwind CSS", "Vite"] },
+  { label: "Data and tools", items: ["MySQL", "Git"] },
+];
+
+export const HERO_LINE =
+  "I build Java and Spring Boot backends with React frontends that are fast, keyboard-accessible and easy to use.";

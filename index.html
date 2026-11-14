@@ -4,19 +4,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Sujith Kumar V - Full-Stack Developer</title>
-  <meta name="description" content="Portfolio of Sujith Kumar V, a full-stack developer building Java, Spring Boot and React applications.">
+  <meta name="description" content="Portfolio of Sujith Kumar V, a full-stack developer building Java, Spring Boot and React applications. Open the files, run the live projects, or use the terminal.">
   <meta name="color-scheme" content="dark light">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Sujith Kumar V - Full-Stack Developer">
+  <meta property="og:description" content="A portfolio built as a working code editor: open files, run live projects, use the terminal.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111216'/%3E%3Cpath d='M26 18 12 32l14 14M38 18l14 14-14 14' fill='none' stroke='%23ff8f4a' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
   <script>
-    // Set theme before first paint to avoid a flash
     (function () {
       var saved = localStorage.getItem("theme");
-      var prefersLight = window.matchMedia("(prefers-color-scheme: light)").matches;
-      document.documentElement.dataset.theme = saved || (prefersLight ? "light" : "dark");
+      var light = window.matchMedia("(prefers-color-scheme: light)").matches;
+      document.documentElement.dataset.theme = saved || (light ? "light" : "dark");
     })();
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
   <div id="root"></div>
