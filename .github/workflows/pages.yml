@@ -40,6 +40,7 @@ jobs:
           playground|feature/live-playground|Playground (physics)
           3d|feature/live-3d|Journey (3D)
           bento|feature/live-bento|Living Bento
+          devworld|feature/live-devworld|Devworld (code editor)
           LIST
           {
             echo '<!DOCTYPE html><html lang="en"><meta charset="utf-8">'
